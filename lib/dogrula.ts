@@ -46,6 +46,9 @@ export function firmaDogrula(sektor: Sektor, f: Firma) {
     if (!t.googleAds.telefonEtiketi) uyari.push('Google Ads telefon dönüşüm etiketi boş: arama tıklamaları dönüşüm sayılmaz.');
     if (!t.googleAds.whatsappEtiketi) uyari.push('Google Ads WhatsApp dönüşüm etiketi boş.');
   }
+  if (!f.panel) uyari.push('panel boş: arama ve WhatsApp tıklamaları Uluzon panelinde sayılmaz.');
+  else if (!/^[0-9a-f]{32}$/.test(f.panel.anahtar)) hata.push(`panel.anahtar 32 karakterlik olmalı (paneldeki "Site sayacı" kartından kopyalayın): "${f.panel.anahtar}"`);
+  else if (f.panel.adres && !/^(https:\/\/[^/]+|http:\/\/localhost(:\d+)?)/.test(f.panel.adres)) hata.push(`panel.adres https:// ile başlamalı: "${f.panel.adres}"`);
   if (t?.metaPiksel && !/^\d{10,20}$/.test(t.metaPiksel)) hata.push(`Meta piksel kimliği yalnızca rakam olmalı: "${t.metaPiksel}"`);
 
   if (f.logo && !dosyaVar(f.logo)) hata.push(`Logo dosyası bulunamadı: public${f.logo}`);

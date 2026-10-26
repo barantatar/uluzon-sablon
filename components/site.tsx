@@ -11,6 +11,7 @@ import KacakTesti from './kacak-testi';
 import TermalGorsel from './termal-gorsel';
 import WhatsappLogo from './whatsapp-logo';
 import OtomatikKaydir from './otomatik-kaydir';
+import Sayac from './sayac';
 import Takip, { CerezTercihleri } from './takip';
 import { YASAL_YOLLAR, type YasalMetin } from '@/lib/sayfa';
 
@@ -146,6 +147,7 @@ export function Kabuk({ b, children }: { b: Baglam; children: ReactNode }) {
   } as CSSProperties;
   return (
     <div style={stil}>
+      {!DEMO && b.firma.panel && <Sayac panel={b.firma.panel} />}
       {!DEMO && b.firma.takip && <Takip takip={b.firma.takip} politika={b.yol(`/${YASAL_YOLLAR.cerez}`)} />}
       {DEMO && <DemoBandi b={b} />}
       <Ust b={b} />
@@ -1059,6 +1061,11 @@ function YasalSayfa({ b, metin }: { b: Baglam; metin: YasalMetin }) {
             paragraflar: [
               'Bu sitede form bulunmaz; bize telefonla ya da WhatsApp üzerinden ulaştığınızda paylaştığınız ad, telefon numarası, adres ve sorunla ilgili bilgiler (fotoğraf dahil) yalnızca talebinizi karşılamak, randevu ve fiyat bilgisi vermek ve yapılan işin garantisini takip etmek amacıyla işlenir.',
               'Siteyi ziyaret ettiğinizde barındırma sağlayıcısı tarafından güvenlik amacıyla IP adresi ve tarayıcı bilgisi gibi teknik kayıtlar tutulabilir.',
+              ...(firma.panel
+                ? [
+                    'Arama ve WhatsApp düğmelerine kaç kez basıldığı, sizi tanımlamadan ve çerez kullanmadan sayılır; IP adresiniz saklanmaz. Bu sayım hizmet sağlayıcımız Uluzon’un paneline aktarılır.',
+                  ]
+                : []),
               takipVar
                 ? 'Onay vermeniz halinde reklamlarımızın etkinliğini ölçmek için çerezler kullanılır; ayrıntılar Çerez Politikası’ndadır.'
                 : 'Sitede reklam veya analiz çerezi kullanılmaz.',

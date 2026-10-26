@@ -51,6 +51,9 @@ export const FIRMA: Firma = {
   baslik: undefined, // { on: '{yerde} su kaçağını', vurgu: 'kırmadan buluyoruz.' }
   aciklama: undefined,
 
+  // ── Uluzon paneli sayacı (çerezsiz; Ara ve WhatsApp tıklamaları firmanın panelinde sayılır) ──
+  panel: undefined, // { anahtar: '...' }  → panelde müşteri sayfası > "Site sayacı"
+
   // ── Dönüşüm ölçümü (ziyaretçi çerez onayı verirse yüklenir) ──────
   takip: undefined,
   // takip: {
