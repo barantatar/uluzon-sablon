@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
-/* Firma renkleri <body> üzerinde --renk-* değişkenleriyle gelir (app/layout.tsx). */
+/* Firma renkleri sayfa kabuğunda --renk-* değişkenleriyle gelir (components/site.tsx). */
 @theme inline {
   --color-ana: var(--renk-ana);
   --color-ana-koyu: var(--renk-ana-koyu);
   --color-ana-acik: var(--renk-ana-acik);
-  --color-acil: var(--renk-acil);
-  --color-acil-koyu: var(--renk-acil-koyu);
+  --color-gece: var(--renk-gece);
 
   --font-sans: var(--font-govde), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 @theme {
-  --color-murekkep: #0f172a;
-  --color-metin: #334155;
-  --color-soluk: #5b6676;
-  --color-zemin: #f6f8fb;
-  --color-cizgi: #e2e8f0;
+  --color-murekkep: #0b1220;
+  --color-metin: #3d4757;
+  --color-soluk: #5f6b7a;
+  --color-zemin: #f6f7f9;
+  --color-cizgi: #e7e9ee;
   --color-yildiz: #f5a524;
-  --color-whatsapp: #0f7a41;
+  /* WhatsApp marka yeşili; üzerindeki logo beyazdır */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-koyu: #128c4b;
 
-  --shadow-kart: 0 1px 2px rgb(15 23 42 / 0.05), 0 10px 30px -14px rgb(15 23 42 / 0.12);
+  --shadow-kart: 0 1px 2px rgb(11 18 32 / 0.04), 0 12px 32px -16px rgb(11 18 32 / 0.14);
 }
 
 @layer base {
@@ -48,7 +49,7 @@
   }
 
   :focus-visible {
-    outline: 3px solid var(--renk-acil);
+    outline: 3px solid var(--renk-ana);
     outline-offset: 2px;
     border-radius: 8px;
   }

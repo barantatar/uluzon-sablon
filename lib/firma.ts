@@ -1,4 +1,5 @@
 import type { Firma, Renk, Sektor } from './tipler';
+import { deEki } from './dil';
 
 export const DEMO = process.env.NEXT_PUBLIC_DEMO === '1';
 export const ULUZON_URL = 'https://uluzon.com';
@@ -28,13 +29,29 @@ export function telHref(firma: Firma): string {
 
 export function waLink(firma: Firma, mesaj?: string): string {
   const numara = firma.whatsapp ? firma.whatsapp.replace(/\D/g, '') : `90${rakamlar(firma.telefon).slice(1)}`;
-  const metin = mesaj ?? `Merhaba ${firma.ad}, destek almak istiyorum.`;
+  const metin = mesaj ?? `Merhaba ${firma.ad}, bir sorunum var. Fotoğraf gönderebilirim.`;
   return `https://wa.me/${numara}?text=${encodeURIComponent(metin)}`;
 }
 
-/** Metindeki {firma}, {ilce}, {sehir} yer tutucularını doldurur */
-export function doldur(metin: string, firma: Firma): string {
-  return metin.replaceAll('{firma}', firma.ad).replaceAll('{ilce}', firma.ilce).replaceAll('{sehir}', firma.sehir);
+/** Metindeki {firma}, {sehir}, {yer}, {yerde} yer tutucularını doldurur. Yer verilmezse şehirdir. */
+export function doldur(metin: string, firma: Firma, yer: string = firma.sehir): string {
+  return metin
+    .replaceAll('{firma}', firma.ad)
+    .replaceAll('{sehir}', firma.sehir)
+    .replaceAll('{yerde}', deEki(yer))
+    .replaceAll('{yer}', yer);
+}
+
+/** Türkçe adı adres parçasına çevirir: "Yenişehir" → "yenisehir" */
+export function slugla(ad: string): string {
+  const harf: Record<string, string> = { ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u' };
+  return ad
+    .toLocaleLowerCase('tr-TR')
+    .replace(/[çğıöşü]/g, (h) => harf[h])
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 export function renkler(sektor: Sektor, firma: Firma): Renk {

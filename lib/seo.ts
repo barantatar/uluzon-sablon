@@ -1,27 +1,41 @@
 import type { Metadata } from 'next';
-import type { Firma, Sektor } from './tipler';
 import { doldur, telHref } from './firma';
+import { sayfaYolu, type Baglam } from './sayfa';
 
-export function sayfaMetadata(sektor: Sektor, firma: Firma): Metadata {
-  const baslik = doldur(sektor.seoBaslik, firma);
-  const aciklama = doldur(sektor.seoAciklama, firma);
+export function sayfaBasligi(b: Baglam): { baslik: string; aciklama: string } {
+  const { sektor, firma, sayfa, yer } = b;
+  if (sayfa.tur === 'hizmet' || sayfa.tur === 'hizmetIlce') {
+    return {
+      baslik: `${yer} ${sayfa.hizmet.ad} | ${firma.ad}`,
+      aciklama: `${doldur(sayfa.hizmet.aciklama, firma, yer)} ${firma.telefon}`,
+    };
+  }
+  return { baslik: doldur(sektor.seoBaslik, firma, yer), aciklama: doldur(sektor.seoAciklama, firma, yer) };
+}
+
+export function sayfaMetadata(b: Baglam): Metadata {
+  const { baslik, aciklama } = sayfaBasligi(b);
+  const url = b.firma.siteUrl ? new URL(sayfaYolu(b.sayfa), b.firma.siteUrl).toString() : undefined;
   return {
     title: baslik,
     description: aciklama,
-    alternates: firma.siteUrl ? { canonical: firma.siteUrl } : undefined,
-    openGraph: { title: baslik, description: aciklama, type: 'website', locale: 'tr_TR', url: firma.siteUrl },
+    alternates: url ? { canonical: url } : undefined,
+    openGraph: { title: baslik, description: aciklama, type: 'website', locale: 'tr_TR', url },
   };
 }
 
-/** schema.org yerel işletme verisi; yalnızca gerçek müşteri sitesinde basılır. */
-export function isletmeSchema(sektor: Sektor, firma: Firma) {
-  const veri: Record<string, unknown> = {
-    '@context': 'https://schema.org',
+const GUNLER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+/** schema.org verisi; yalnızca gerçek müşteri sitesinde basılır. */
+export function sayfaSchema(b: Baglam) {
+  const { sektor, firma, sayfa, yer } = b;
+  const kok = firma.siteUrl?.replace(/\/$/, '');
+  const isletme: Record<string, unknown> = {
     '@type': sektor.schemaTuru,
+    '@id': kok ? `${kok}/#isletme` : undefined,
     name: firma.ad,
     telephone: telHref(firma).replace('tel:', ''),
-    url: firma.siteUrl,
-    description: doldur(sektor.seoAciklama, firma),
+    url: kok,
     address: {
       '@type': 'PostalAddress',
       addressLocality: firma.ilce,
@@ -35,17 +49,32 @@ export function isletmeSchema(sektor: Sektor, firma: Firma) {
       : firma.saatler
         ? { '@type': 'OpeningHoursSpecification', dayOfWeek: GUNLER, opens: firma.saatler.acilis, closes: firma.saatler.kapanis }
         : undefined,
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: sektor.ad,
-      itemListElement: sektor.hizmetler.map((h) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: h.ad } })),
-    },
   };
   // Puan yalnızca gerçek Google verisi girildiyse eklenir.
   if (firma.googlePuani) {
-    veri.aggregateRating = { '@type': 'AggregateRating', ratingValue: firma.googlePuani.puan, reviewCount: firma.googlePuani.yorumSayisi };
+    isletme.aggregateRating = { '@type': 'AggregateRating', ratingValue: firma.googlePuani.puan, reviewCount: firma.googlePuani.yorumSayisi };
   }
-  return veri;
-}
 
-const GUNLER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const graf: Record<string, unknown>[] = [isletme];
+  if (sayfa.tur === 'hizmet' || sayfa.tur === 'hizmetIlce') {
+    graf.push({
+      '@type': 'Service',
+      name: `${yer} ${sayfa.hizmet.ad}`,
+      serviceType: sayfa.hizmet.ad,
+      description: doldur(sayfa.hizmet.aciklama, firma, yer),
+      areaServed: { '@type': 'City', name: `${yer}, ${firma.sehir}` },
+      provider: kok ? { '@id': `${kok}/#isletme` } : { '@type': sektor.schemaTuru, name: firma.ad },
+    });
+  }
+  if (sayfa.tur !== 'ana' && kok) {
+    const parcalar: { ad: string; yol: string }[] = [{ ad: 'Ana sayfa', yol: '/' }];
+    if (sayfa.tur === 'ilce') parcalar.push({ ad: sayfa.ilce, yol: sayfaYolu(sayfa) });
+    if (sayfa.tur === 'hizmet' || sayfa.tur === 'hizmetIlce') parcalar.push({ ad: sayfa.hizmet.ad, yol: sayfaYolu({ tur: 'hizmet', hizmet: sayfa.hizmet }) });
+    if (sayfa.tur === 'hizmetIlce') parcalar.push({ ad: sayfa.ilce, yol: sayfaYolu(sayfa) });
+    graf.push({
+      '@type': 'BreadcrumbList',
+      itemListElement: parcalar.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.ad, item: `${kok}${p.yol}` })),
+    });
+  }
+  return { '@context': 'https://schema.org', '@graph': graf };
+}

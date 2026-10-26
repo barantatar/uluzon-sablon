@@ -19,7 +19,7 @@ export default function Icon() {
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 14,
-          background: renkler(sektor, FIRMA).ana,
+          background: renkler(sektor, FIRMA).gece,
           color: '#fff',
           fontSize: 30,
           fontWeight: 800,

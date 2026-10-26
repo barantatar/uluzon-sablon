@@ -1,6 +1,11 @@
 // Şablonun iki katmanı vardır:
-// - Sektör: o işin dili (hizmetler, sorunlar, süreç, sık sorular). Tüm firmalarda aynıdır.
+// - Sektör: o işin dili (hizmetler, süreç, sık sorular). Tüm firmalarda aynıdır.
 // - Firma: tek bir müşteriye ait bilgiler (ad, telefon, bölge, yorumlar, renk).
+//
+// Metinlerde kullanılabilen yer tutucular:
+//   {firma}  firma adı            {sehir}  firmanın şehri
+//   {yer}    sayfanın yeri: ilçe sayfasında ilçe, diğerlerinde şehir
+//   {yerde}  bulunma ekli yer: "Yenişehir’de", "Mersin’de"
 
 export type Ikon =
   | 'damla'
@@ -16,25 +21,10 @@ export type Ikon =
   | 'fiyat'
   | 'garanti';
 
-export interface Hizmet {
-  slug: string;
-  ad: string;
-  ikon: Ikon;
-  ozet: string;
-  /** "Ne zaman çağırmalı" belirtileri */
-  belirtiler: string[];
-}
-
-export interface Sorun {
-  ad: string;
-  ikon: Ikon;
-  /** WhatsApp'a hazır giden mesajın sorun kısmı */
-  mesaj: string;
-}
-
-export interface Adim {
-  baslik: string;
-  metin: string;
+/** Başlığın düz ve vurgulu iki parçası */
+export interface Baslik {
+  on: string;
+  vurgu: string;
 }
 
 export interface Soru {
@@ -42,26 +32,58 @@ export interface Soru {
   cevap: string;
 }
 
+export interface Adim {
+  baslik: string;
+  metin: string;
+}
+
+export interface Hizmet {
+  /** Sayfa adresi: /su-kacagi-tespiti, /su-kacagi-tespiti/yenisehir */
+  slug: string;
+  ad: string;
+  ikon: Ikon;
+  /** Kartta görünen tek cümle */
+  kisa: string;
+  baslik: Baslik;
+  aciklama: string;
+  /** "Bu belirtiler varsa çağırın" */
+  belirtiler: string[];
+  /** "Neler yapıyoruz" */
+  kapsam: string[];
+  sss: Soru[];
+  /** Cihazla tespit anlatımı ve kırmadan/kırarak karşılaştırması gösterilsin mi */
+  cihazla?: boolean;
+  /** Evde kaçak testi gösterilsin mi */
+  test?: boolean;
+  /** WhatsApp'a hazır giden mesajın sorun kısmı */
+  mesaj: string;
+}
+
 export interface Sektor {
   slug: string;
   ad: string;
   /** Üst menüde firma adının altında görünen kısa etiket */
   etiket: string;
-  /** Başlıkta kullanılan iş tanımı: "Su kaçağı ve tesisat arızası" */
-  isTanimi: string;
-  /** Başlığın vurgulu ikinci yarısı */
-  vaat: string;
-  /** Kısa açıklama; {ilce} ve {firma} yer tutucuları kullanılabilir */
+  /** Ana sayfa ve ilçe sayfası başlığı */
+  baslik: Baslik;
   aciklama: string;
-  /** Hero altındaki güven maddeleri */
+  /** Hero altındaki kısa güven maddeleri */
   guvenMaddeleri: string[];
-  /** Acil durumda ilk yapılacaklar kartı */
-  acilAdimlar: { baslik: string; adimlar: string[] };
-  sorunlar: Sorun[];
+  /** Acil durumda ilk yapılacaklar */
+  ilkAdimlar: { soru: string; adimlar: string[] };
   hizmetler: Hizmet[];
+  /** Cihazla tespit bölümü */
+  tespit: {
+    baslik: string;
+    metin: string;
+    eski: { baslik: string; maddeler: string[] };
+    yeni: { baslik: string; maddeler: string[] };
+  };
   farklar: { ikon: Ikon; baslik: string; metin: string }[];
   surec: Adim[];
   sss: Soru[];
+  /** Sayfa sonundaki çağrı başlığı */
+  sonCagri: string;
   ornekYorumlar: Yorum[];
   /** Ziyaretçinin evde kendi yapabileceği kısa kontrol (ör. görünmeyen kaçak testi) */
   evdeTest?: {
@@ -75,7 +97,7 @@ export interface Sektor {
     hayirBaslik: string;
     hayirMetin: string;
   };
-  /** SEO başlığı ve açıklaması; {ilce}, {sehir}, {firma} yer tutucuları */
+  /** Ana sayfa ve ilçe sayfası SEO metinleri; hizmet sayfaları kendi başlığından üretilir */
   seoBaslik: string;
   seoAciklama: string;
   /** schema.org işletme türü */
@@ -84,13 +106,12 @@ export interface Sektor {
 }
 
 export interface Renk {
-  /** Ana renk: başlıklar, ikonlar, koyu bantlar */
+  /** Ana renk: butonlar, ikonlar, vurgular */
   ana: string;
   anaKoyu: string;
   anaAcik: string;
-  /** Aciliyet rengi: arama butonu */
-  acil: string;
-  acilKoyu: string;
+  /** Koyu zemin: hero ve son çağrı bandı */
+  gece: string;
 }
 
 export interface Yorum {
@@ -107,9 +128,9 @@ export interface Firma {
   /** Uluslararası biçimde WhatsApp numarası, boşsa telefondan türetilir */
   whatsapp?: string;
   sehir: string;
-  /** Başlıkta görünen ana ilçe */
+  /** Firmanın bulunduğu ilçe */
   ilce: string;
-  /** Hizmet verilen ilçeler */
+  /** Hizmet verilen ilçeler; her biri için ayrı sayfa açılır */
   ilceler: string[];
   adres?: string;
   calismaSaatleri: string;

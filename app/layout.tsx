@@ -6,7 +6,7 @@ import './globals.css';
 const govde = Manrope({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-govde',
-  display: 'swap',
+  display: 'optional',
 });
 
 export const metadata: Metadata = {
