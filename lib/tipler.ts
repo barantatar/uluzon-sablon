@@ -80,6 +80,10 @@ export interface Sektor {
     yeni: { baslik: string; maddeler: string[] };
   };
   farklar: { ikon: Ikon; baslik: string; metin: string }[];
+  /** İlçe sayfaları için: yapı tipine göre o sektörün sık gördüğü sorunlar */
+  yapiNotlari: Partial<Record<YapiTuru, { baslik: string; metin: string; hizmetler: string[] }>>;
+  /** İlçe sayfasına özel sorular; {yer} ilçedir */
+  ilceSss: Soru[];
   surec: Adim[];
   sss: Soru[];
   /** Sayfa sonundaki çağrı başlığı */
@@ -103,6 +107,17 @@ export interface Sektor {
   /** schema.org işletme türü */
   schemaTuru: string;
   renk: Renk;
+}
+
+/** Bir ilçedeki yaygın yapı tipi; sektör her tip için ayrı not ve öne çıkan hizmetler verir */
+export type YapiTuru = 'eski' | 'apartman' | 'site' | 'yazlik' | 'mustakil' | 'isyeri';
+
+export interface IlceBilgisi {
+  /** İlçeyi tanıtan bir iki cümle */
+  tanim: string;
+  mahalleler: string[];
+  yapilar: YapiTuru[];
+  komsular: string[];
 }
 
 export interface Renk {
@@ -146,6 +161,11 @@ export interface Firma {
   garantiAy?: number;
   /** Keşif ücreti metni: "300 ₺, iş yapılırsa düşülür" */
   kesifUcreti?: string;
+  /** Ana sayfa başlığı; verilirse sektörün başlığını ezer (ör. yalnızca su kaçağı yapan firma) */
+  baslik?: Baslik;
+  aciklama?: string;
+  /** İlçeye varış süresi: { Yenişehir: '20-30 dakika' } */
+  varisSuresi?: Record<string, string>;
   /** Firma rengi verilirse sektörün varsayılan rengini ezer */
   renk?: Partial<Renk>;
   siteUrl?: string;

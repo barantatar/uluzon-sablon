@@ -3,6 +3,7 @@ import { ArrowRight, Check, ChevronDown, ChevronRight, Clock, MapPin, Phone, Sta
 import type { Baslik as BaslikTipi, Hizmet, Soru, Yorum } from '@/lib/tipler';
 import { DEMO, ULUZON_URL, basHarfler, doldur, renkler, slugla } from '@/lib/firma';
 import { sayfaYolu, type Baglam } from '@/lib/sayfa';
+import { ilceBilgisi } from '@/bolgeler';
 import Ikon from './ikon';
 import AcikRozet from './acik-rozet';
 import KacakTesti from './kacak-testi';
@@ -17,22 +18,16 @@ export default function Site({ b }: { b: Baglam }) {
   const { sayfa } = b;
   return (
     <Kabuk b={b}>
-      {sayfa.tur === 'ana' || sayfa.tur === 'ilce' ? <GenelSayfa b={b} /> : <HizmetSayfasi b={b} hizmet={sayfa.hizmet} />}
+      {sayfa.tur === 'ana' ? <AnaSayfa b={b} /> : sayfa.tur === 'ilce' ? <IlceSayfasi b={b} /> : <HizmetSayfasi b={b} hizmet={sayfa.hizmet} />}
     </Kabuk>
   );
 }
 
-function GenelSayfa({ b }: { b: Baglam }) {
-  const { sektor, firma, sayfa, yer } = b;
-  const ilceSayfasi = sayfa.tur === 'ilce';
+function AnaSayfa({ b }: { b: Baglam }) {
+  const { sektor, firma, yer } = b;
   return (
     <>
-      <Hero
-        b={b}
-        baslik={sektor.baslik}
-        aciklama={doldur(sektor.aciklama, firma, yer)}
-        kirinti={ilceSayfasi ? [{ ad: 'Bölgeler', href: b.yol('/', 'bolgeler') }, { ad: yer }] : undefined}
-      />
+      <Hero b={b} baslik={firma.baslik ?? sektor.baslik} aciklama={doldur(firma.aciklama ?? sektor.aciklama, firma, yer)} gorsel={<HizmetKarti b={b} />} />
       <GuvenSeridi b={b} />
       <IlkAdimlar b={b} />
       <Hizmetler b={b} />
@@ -41,10 +36,47 @@ function GenelSayfa({ b }: { b: Baglam }) {
       <Surec b={b} />
       {sektor.evdeTest && <EvdeTest b={b} />}
       <Yorumlar b={b} />
-      <Bolgeler b={b} baslik={ilceSayfasi ? 'Yakın bölgelerde de hizmetinizdeyiz' : `${doldur('{yerde}', firma)} hizmet verdiğimiz bölgeler`} />
+      <Bolgeler b={b} baslik={`${doldur('{yerde}', firma)} hizmet verdiğimiz bölgeler`} />
       <Sss b={b} sorular={sektor.sss} />
       <SonCagri b={b} />
     </>
+  );
+}
+
+// İlçe sayfası ana sayfanın kopyası değildir: ilçenin yapı tipine göre o bölgede
+// en çok karşılaşılan işleri, mahalleleri ve ilçeye özel soruları anlatır.
+function IlceSayfasi({ b }: { b: Baglam }) {
+  const { sektor, firma, yer } = b;
+  const bilgi = ilceBilgisi(firma.sehir, yer);
+  const aciklama = bilgi
+    ? `${bilgi.tanim} ${yer} genelinde ${bilgi.mahalleler.slice(0, 3).join(', ')} ve çevresine geliyoruz.`
+    : doldur(sektor.aciklama, firma, yer);
+  return (
+    <>
+      <Hero
+        b={b}
+        baslik={firma.baslik ?? sektor.baslik}
+        aciklama={aciklama}
+        kirinti={[{ ad: 'Bölgeler', href: b.yol('/', 'bolgeler') }, { ad: yer }]}
+        gorsel={<HizmetKarti b={b} />}
+      />
+      <GuvenSeridi b={b} />
+      <IlkAdimlar b={b} />
+      <IlceTanitim b={b} />
+      <Hizmetler b={b} />
+      <Farklar b={b} />
+      <Yorumlar b={b} />
+      <Sss b={b} sorular={[...ilceSorulari(b), ...sektor.sss.slice(0, 2)]} />
+      <Bolgeler b={b} baslik={`${yer} dışında da geliyoruz`} />
+      <SonCagri b={b} />
+    </>
+  );
+}
+
+function ilceSorulari(b: Baglam): Soru[] {
+  const varis = b.firma.varisSuresi?.[b.yer];
+  return b.sektor.ilceSss.map((s, i) =>
+    i === 0 && varis ? { soru: s.soru, cevap: `${b.yer} bölgesine genellikle ${varis} içinde geliyoruz. Aradığınızda size net saat veriyoruz.` } : s,
   );
 }
 
@@ -56,15 +88,23 @@ function HizmetSayfasi({ b, hizmet }: { b: Baglam; hizmet: Hizmet }) {
       : [{ ad: hizmet.ad }];
   return (
     <>
-      <Hero b={b} baslik={hizmet.baslik} aciklama={doldur(hizmet.aciklama, firma, yer)} kirinti={kirinti} waMesaj={hizmet.mesaj} />
+      <Hero
+        b={b}
+        baslik={hizmet.baslik}
+        aciklama={doldur(hizmet.aciklama, firma, yer)}
+        kirinti={kirinti}
+        waMesaj={hizmet.mesaj}
+        gorsel={hizmet.cihazla ? <TermalKart /> : <KapsamKarti hizmet={hizmet} />}
+      />
       <GuvenSeridi b={b} />
       {hizmet.cihazla && <IlkAdimlar b={b} />}
       <BelirtiKapsam b={b} hizmet={hizmet} />
+      {sayfa.tur === 'hizmetIlce' && <IlceNotu b={b} hizmet={hizmet} />}
       {hizmet.cihazla && <Tespit b={b} />}
       <Surec b={b} />
       {hizmet.test && sektor.evdeTest && <EvdeTest b={b} />}
       <Yorumlar b={b} />
-      <Sss b={b} sorular={[...hizmet.sss, ...sektor.sss.slice(0, 2)]} />
+      <Sss b={b} sorular={[...hizmet.sss, ...(sayfa.tur === 'hizmetIlce' ? ilceSorulari(b).slice(0, 1) : []), ...sektor.sss.slice(0, 2)]} />
       <DigerHizmetler b={b} haric={hizmet} />
       <Bolgeler b={b} hizmet={hizmet} baslik={`${hizmet.ad} hizmeti verdiğimiz bölgeler`} />
       <SonCagri b={b} waMesaj={hizmet.mesaj} />
@@ -226,12 +266,15 @@ function Hero({
   aciklama,
   kirinti,
   waMesaj,
+  gorsel,
 }: {
   b: Baglam;
   baslik: BaslikTipi;
   aciklama: string;
   kirinti?: { ad: string; href?: string }[];
   waMesaj?: string;
+  /** Masaüstünde sağ sütunda görünen kart */
+  gorsel: ReactNode;
 }) {
   const { firma, yer, yol, tel } = b;
   const saatMetni = firma.yirmiDortSaat ? '7/24 açığız' : firma.calismaSaatleri;
@@ -315,10 +358,60 @@ function Hero({
         </div>
 
         <div style={{ '--gecikme': '250ms' } as CSSProperties} className="giris relative hidden lg:block">
-          <TermalKart />
+          {gorsel}
         </div>
       </div>
     </section>
+  );
+}
+
+/** Ana sayfa ve ilçe sayfası hero kartı: hizmetlere hızlı geçiş */
+function HizmetKarti({ b }: { b: Baglam }) {
+  const { sektor, sayfa } = b;
+  const ilce = sayfa.tur === 'ilce' ? sayfa.ilce : undefined;
+  return (
+    <div className="rounded-[28px] border border-white/10 bg-white/[0.05] p-3 shadow-[0_40px_80px_-30px_rgb(0_0_0/0.6)] backdrop-blur">
+      <p className="px-4 pb-3 pt-3 text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-white/55">Ne için arıyorsunuz?</p>
+      <ul className="grid gap-1.5">
+        {sektor.hizmetler.map((h, i) => (
+          <li key={h.slug} style={{ '--gecikme': `${350 + i * 70}ms` } as CSSProperties} className="giris">
+            <a
+              href={b.yol(sayfaYolu(ilce ? { tur: 'hizmetIlce', hizmet: h, ilce } : { tur: 'hizmet', hizmet: h }))}
+              className="group flex items-center gap-4 rounded-2xl px-4 py-3 transition-colors hover:bg-white/[0.07]"
+            >
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.08] text-sky-300 ring-1 ring-white/10">
+                <Ikon ad={h.ikon} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold text-white">{h.ad}</span>
+                <span className="block truncate text-[0.8rem] text-white/55">{h.kisa}</span>
+              </span>
+              <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-white/40 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Cihaz gerektirmeyen hizmetlerin hero kartı: yapılan işlerin listesi */
+function KapsamKarti({ hizmet }: { hizmet: Hizmet }) {
+  return (
+    <div className="rounded-[28px] border border-white/10 bg-white/[0.05] p-8 shadow-[0_40px_80px_-30px_rgb(0_0_0/0.6)] backdrop-blur">
+      <span className="grid h-14 w-14 place-items-center rounded-2xl bg-white/[0.08] text-sky-300 ring-1 ring-white/10">
+        <Ikon ad={hizmet.ikon} className="h-7 w-7" />
+      </span>
+      <p className="mt-6 text-xl font-bold text-white">{hizmet.ad}</p>
+      <ul className="mt-5 space-y-3.5">
+        {hizmet.kapsam.map((m, i) => (
+          <li key={m} style={{ '--gecikme': `${350 + i * 90}ms` } as CSSProperties} className="giris flex gap-3 text-white/75">
+            <Check aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-sky-300" strokeWidth={2.5} />
+            {m}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -379,6 +472,85 @@ function IlkAdimlar({ b }: { b: Baglam }) {
         </ol>
       </details>
     </div>
+  );
+}
+
+/** İlçe sayfası: ilçenin yapı tiplerine göre öne çıkan işler, mahalleler, varış */
+function IlceTanitim({ b }: { b: Baglam }) {
+  const { sektor, firma, yer } = b;
+  const bilgi = ilceBilgisi(firma.sehir, yer);
+  if (!bilgi) return null;
+  const notlar = bilgi.yapilar.map((y) => sektor.yapiNotlari[y]).filter((n) => n !== undefined);
+  const varis = firma.varisSuresi?.[yer];
+  return (
+    <Bolum ust={`${yer} hakkında`} baslik={`${doldur('{yerde}', firma, yer)} en çok çağrıldığımız işler`} aciklama={bilgi.tanim}>
+      <div className="grid gap-4 lg:grid-cols-2">
+        {notlar.map((n) => (
+          <div key={n.baslik} className="flex flex-col rounded-3xl border border-cizgi bg-white p-6 sm:p-8">
+            <p className="text-lg font-bold text-murekkep">{n.baslik}</p>
+            <p className="mt-3 leading-relaxed text-metin">{n.metin}</p>
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {n.hizmetler
+                .map((slug) => sektor.hizmetler.find((h) => h.slug === slug))
+                .filter((h) => h !== undefined)
+                .map((h) => (
+                  <li key={h.slug}>
+                    <a
+                      href={b.yol(sayfaYolu({ tur: 'hizmetIlce', hizmet: h, ilce: yer }))}
+                      className="inline-flex items-center gap-2 rounded-full bg-ana-acik px-3.5 py-2 text-[0.85rem] font-semibold text-ana hover:bg-ana hover:text-white"
+                    >
+                      <Ikon ad={h.ikon} className="h-4 w-4" />
+                      {h.ad}
+                    </a>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div className="mt-6 flex flex-col gap-4 rounded-3xl bg-zemin p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div>
+          <p className="font-bold text-murekkep">{yer} içinde geldiğimiz mahalleler</p>
+          <p className="mt-2 text-metin">{bilgi.mahalleler.join(', ')} ve çevresi.</p>
+        </div>
+        {varis && (
+          <p className="flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2 text-[0.9rem] font-semibold text-murekkep ring-1 ring-cizgi">
+            <Clock aria-hidden className="h-4 w-4 text-ana" /> Ortalama varış {varis}
+          </p>
+        )}
+      </div>
+    </Bolum>
+  );
+}
+
+/** Hizmet + ilçe sayfası: bu hizmetin o ilçedeki karşılığı */
+function IlceNotu({ b, hizmet }: { b: Baglam; hizmet: Hizmet }) {
+  const { sektor, firma, yer } = b;
+  const bilgi = ilceBilgisi(firma.sehir, yer);
+  if (!bilgi) return null;
+  const notlar = bilgi.yapilar.map((y) => sektor.yapiNotlari[y]).filter((n) => n !== undefined);
+  const not = notlar.find((n) => n.hizmetler.includes(hizmet.slug)) ?? notlar[0];
+  return (
+    <Bolum ust={yer} baslik={`${doldur('{yerde}', firma, yer)} ${hizmet.ad.toLocaleLowerCase('tr-TR')}`} aciklama={bilgi.tanim} zemin>
+      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        {not && (
+          <div className="rounded-3xl border border-cizgi bg-white p-6 sm:p-8">
+            <p className="text-lg font-bold text-murekkep">{not.baslik}</p>
+            <p className="mt-3 leading-relaxed text-metin">{not.metin}</p>
+          </div>
+        )}
+        <div className="rounded-3xl border border-cizgi bg-white p-6 sm:p-8">
+          <p className="font-bold text-murekkep">Geldiğimiz mahalleler</p>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {bilgi.mahalleler.map((m) => (
+              <li key={m} className="rounded-full bg-zemin px-3 py-1.5 text-[0.85rem] font-medium text-metin">
+                {m}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </Bolum>
   );
 }
 
@@ -579,11 +751,17 @@ function Yorumlar({ b }: { b: Baglam }) {
 }
 
 function Bolgeler({ b, baslik, hizmet }: { b: Baglam; baslik: string; hizmet?: Hizmet }) {
-  const { firma, yer } = b;
+  const { firma, yer, sayfa } = b;
+  // İlçe sayfasında bulunulan ilçe listelenmez, komşu ilçeler öne alınır.
+  const komsular = sayfa.tur === 'ilce' ? (ilceBilgisi(firma.sehir, yer)?.komsular ?? []) : [];
+  const ilceler =
+    sayfa.tur === 'ilce'
+      ? firma.ilceler.filter((i) => i !== yer).sort((x, y) => Number(komsular.includes(y)) - Number(komsular.includes(x)))
+      : firma.ilceler;
   return (
     <Bolum id="bolgeler" ust="Hizmet bölgeleri" baslik={baslik}>
       <ul className="flex flex-wrap gap-2.5">
-        {firma.ilceler.map((i) => {
+        {ilceler.map((i) => {
           const aktif = i === yer;
           const href = b.yol(sayfaYolu(hizmet ? { tur: 'hizmetIlce', hizmet, ilce: i } : { tur: 'ilce', ilce: i }));
           return (

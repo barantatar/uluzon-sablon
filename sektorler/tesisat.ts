@@ -4,8 +4,9 @@ export const tesisat: Sektor = {
   slug: 'tesisat',
   ad: 'Tesisat ve su kaçağı',
   etiket: 'Tesisat · Su kaçağı',
-  baslik: { on: '{yerde} su kaçağını', vurgu: 'kırmadan buluyoruz.' },
-  aciklama: 'Kaçağın yerini cihazla tespit ediyor, yalnızca o noktayı açıyoruz. Fiyatı işe başlamadan söylüyor, evinizi temiz teslim ediyoruz.',
+  baslik: { on: '{yerde} tesisat arızalarında', vurgu: 'önce fiyat, sonra temiz iş.' },
+  aciklama:
+    'Su kaçağından tıkanıklığa, tesisat yenilemeden petek hattına kadar. Sorunun kaynağını cihazla buluyor, fiyatı işe başlamadan söylüyor, evinizi temiz teslim ediyoruz.',
   guvenMaddeleri: [
     { ikon: 'cihaz', metin: 'Cihazla tespit' },
     { ikon: 'fiyat', metin: 'Önce fiyat' },
@@ -178,6 +179,48 @@ export const tesisat: Sektor = {
     { ikon: 'fiyat', baslik: 'Önce fiyat', metin: 'Tespitten sonra fiyatı söylüyoruz; onayınız olmadan başlamıyoruz.' },
     { ikon: 'temiz', baslik: 'Temiz çalışma', metin: 'Galoş, koruma örtüsü ve iş sonunda temizlik.' },
     { ikon: 'garanti', baslik: 'Garantili işçilik', metin: 'Sorun tekrar ederse yeniden geliyoruz.' },
+  ],
+  yapiNotlari: {
+    eski: {
+      baslik: 'Eski binalarda tesisat',
+      metin: 'Yıllanmış galvaniz borular içten paslanır; basınç düşer, sık sık farklı yerden kaçak çıkar. Parça parça tamir yerine hangi bölümün yenilenmesi gerektiğini ölçerek söylüyoruz.',
+      hizmetler: ['tesisat-yenileme', 'su-kacagi-tespiti', 'tikaniklik-acma'],
+    },
+    apartman: {
+      baslik: 'Apartmanlarda alt kata sızıntı',
+      metin: 'Apartmanlarda en sık çağrıldığımız iş alt kata sızan sudur. Kaçağın sizin dairenizden mi ortak hattan mı geldiğini tespit edip komşu ve yöneticiyle paylaşabileceğiniz şekilde bildiriyoruz.',
+      hizmetler: ['su-kacagi-tespiti', 'nem-ve-rutubet', 'tikaniklik-acma'],
+    },
+    site: {
+      baslik: 'Yeni sitelerde gömme tesisat',
+      metin: 'Yeni binalarda tesisat duvarın ve zeminin içindedir: gömme rezervuar, ankastre batarya, yerden ısıtma. Kırmadan tespit burada en çok fark yaratır; fayansı ve dolabı korur.',
+      hizmetler: ['su-kacagi-tespiti', 'banyo-mutfak-tesisati', 'kombi-petek-tesisati'],
+    },
+    yazlik: {
+      baslik: 'Uzun süre kapalı kalan yazlıklar',
+      metin: 'Aylarca kullanılmayan evlerde contalar kurur, rezervuar ve bataryalar kaçırmaya başlar, giderler tıkanır. Sezon açılışında genel tesisat kontrolü yapıp sorunları tek seferde gideriyoruz.',
+      hizmetler: ['banyo-mutfak-tesisati', 'su-kacagi-tespiti', 'tikaniklik-acma'],
+    },
+    mustakil: {
+      baslik: 'Müstakil evlerde uzun hatlar',
+      metin: 'Müstakil evlerde sayaçtan eve ve bahçeye uzanan hatlar uzundur; toprak altındaki kaçak aylarca fark edilmeyebilir. Akustik cihazla hattı dinleyip kaçağın yerini buluyoruz.',
+      hizmetler: ['su-kacagi-tespiti', 'tesisat-yenileme', 'kombi-petek-tesisati'],
+    },
+    isyeri: {
+      baslik: 'Dükkân ve iş yerleri',
+      metin: 'İş yerinde su kesintisi kayıp demektir. Mümkün olan işleri mesai dışında yapıyor, suyun kesik kalacağı süreyi önceden söylüyoruz.',
+      hizmetler: ['tikaniklik-acma', 'tesisat-yenileme', 'su-kacagi-tespiti'],
+    },
+  },
+  ilceSss: [
+    {
+      soru: '{yer} bölgesine ne kadar sürede geliyorsunuz?',
+      cevap: 'Aradığınızda ustanın konumuna göre size net bir saat veriyoruz. Acil su kaçaklarında önceliği size veriyoruz.',
+    },
+    {
+      soru: '{yer} için ayrıca yol veya keşif ücreti var mı?',
+      cevap: 'Varsa telefonda, işe başlamadan söylüyoruz. Sürpriz ücret çıkmaz.',
+    },
   ],
   surec: [
     { baslik: 'Arayın ya da yazın', metin: 'Sorunu anlatın, mümkünse fotoğraf gönderin.' },

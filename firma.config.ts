@@ -15,4 +15,6 @@ export const FIRMA: Firma = {
   saatler: { acilis: '08:00', kapanis: '22:00' },
   yirmiDortSaat: false,
   garantiAy: 12,
+  // Varış süreleri firmadan alınır; boş bırakılırsa sitede gösterilmez.
+  varisSuresi: { Mezitli: '20-30 dakika', Yenişehir: '20-30 dakika', Akdeniz: '30-40 dakika', Toroslar: '30-40 dakika' },
 };
