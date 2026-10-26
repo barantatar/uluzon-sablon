@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+/* Firma renkleri <body> üzerinde --renk-* değişkenleriyle gelir (app/layout.tsx). */
+@theme inline {
+  --color-ana: var(--renk-ana);
+  --color-ana-koyu: var(--renk-ana-koyu);
+  --color-ana-acik: var(--renk-ana-acik);
+  --color-acil: var(--renk-acil);
+  --color-acil-koyu: var(--renk-acil-koyu);
+
+  --font-sans: var(--font-govde), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+@theme {
+  --color-murekkep: #0f172a;
+  --color-metin: #334155;
+  --color-soluk: #5b6676;
+  --color-zemin: #f6f8fb;
+  --color-cizgi: #e2e8f0;
+  --color-yildiz: #f5a524;
+  --color-whatsapp: #0f7a41;
+
+  --shadow-kart: 0 1px 2px rgb(15 23 42 / 0.05), 0 10px 30px -14px rgb(15 23 42 / 0.12);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background: #fff;
+    color: var(--color-murekkep);
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--renk-acil);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@layer components {
+  .kap {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.125rem;
+  }
+  @media (min-width: 768px) {
+    .kap { padding-inline: 2rem; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
