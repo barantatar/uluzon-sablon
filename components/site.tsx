@@ -138,9 +138,9 @@ function Kabuk({ b, children }: { b: Baglam; children: ReactNode }) {
         rel="noopener noreferrer"
         data-olay="whatsapp"
         aria-label="WhatsApp’tan yazın"
-        className="nabiz giris fixed bottom-5 right-5 z-50 grid h-15 w-15 place-items-center rounded-full bg-whatsapp text-white shadow-[0_10px_30px_-6px_rgb(18_140_75/0.6)] transition-transform hover:scale-105 sm:bottom-7 sm:right-7"
+        className="nabiz giris fixed bottom-5 right-5 z-50 grid h-13 w-13 place-items-center rounded-full bg-whatsapp text-white shadow-[0_10px_30px_-6px_rgb(18_140_75/0.6)] transition-transform hover:scale-105 sm:bottom-7 sm:right-7"
       >
-        <WhatsappLogo className="h-8 w-8" />
+        <WhatsappLogo className="h-7 w-7" />
       </a>
     </div>
   );
@@ -328,7 +328,14 @@ function Hero({
             </nav>
           )}
 
-          <p className="giris inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.06] px-3.5 py-1.5 text-[0.78rem] font-medium text-white/85 backdrop-blur">
+          {/* Fotoğraflı hero'da mobilde rozet fotoğrafın sol üst köşesine oturur */}
+          <p
+            className={`giris inline-flex items-center rounded-full border border-white/12 font-medium text-white/85 backdrop-blur ${
+              foto
+                ? 'absolute left-[1.125rem] top-4 gap-2 bg-gece/45 px-2.5 py-1 text-[0.7rem] md:static md:gap-2.5 md:bg-white/[0.06] md:px-3.5 md:py-1.5 md:text-[0.78rem]'
+                : 'gap-2.5 bg-white/[0.06] px-3.5 py-1.5 text-[0.78rem]'
+            }`}
+          >
             {firma.saatler && !firma.yirmiDortSaat ? <AcikRozet saatler={firma.saatler} yedekMetin={saatMetni} /> : saatMetni}
             <span aria-hidden className="h-3 w-px bg-white/20" />
             {yer === firma.sehir ? firma.sehir : `${yer}, ${firma.sehir}`}
@@ -346,13 +353,12 @@ function Hero({
             <a
               href={tel}
               data-olay="telefon"
-              aria-label={`Ustayı hemen arayın: ${firma.telefon}`}
+              aria-label={`Hemen arayın: ${firma.telefon}`}
               className="parilti inline-flex h-12 items-center gap-2.5 rounded-full bg-white pl-4 pr-5 text-[0.95rem] font-bold text-gece shadow-[0_10px_30px_-12px_rgb(0_0_0/0.55)] transition-transform hover:-translate-y-0.5"
             >
               {/* Aciliyet: kırmızı, ara ara çalan telefon */}
               <Phone aria-hidden className="zil h-[1.05rem] w-[1.05rem] text-red-500" strokeWidth={2.25} />
-              <span className="sm:hidden">Hemen arayın</span>
-              <span className="hidden sm:inline">Ustayı hemen arayın</span>
+              Hemen Arayın
             </a>
             <a
               href={b.wa(waMesaj)}
