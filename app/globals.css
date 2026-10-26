@@ -181,6 +181,8 @@
     animation: nabiz 2.4s ease-out infinite;
   }
 
+  .nabiz-kirmizi { animation: nabiz 2s ease-out infinite; }
+
   .sicak-nokta { transform-box: fill-box; transform-origin: center; animation: sicak-nokta 3s ease-in-out infinite; }
   .svg-tarama { animation: svg-tarama 4s ease-in-out infinite; }
 

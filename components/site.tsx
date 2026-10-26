@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { preload } from 'react-dom';
 import { ArrowRight, Check, ChevronDown, ChevronRight, Clock, MapPin, Phone, Star, TriangleAlert, X } from 'lucide-react';
-import type { Baslik as BaslikTipi, Hizmet, Soru, Yorum } from '@/lib/tipler';
+import type { Baslik as BaslikTipi, HeroFoto, Hizmet, Soru, Yorum } from '@/lib/tipler';
 import { DEMO, ULUZON_URL, basHarfler, doldur, renkler, slugla } from '@/lib/firma';
 import { sayfaYolu, type Baglam } from '@/lib/sayfa';
 import { ilceBilgisi } from '@/bolgeler';
@@ -278,9 +279,13 @@ function Hero({
 }) {
   const { firma, yer, yol, tel } = b;
   const saatMetni = firma.yirmiDortSaat ? '7/24 açığız' : firma.calismaSaatleri;
+  const foto = firma.heroFoto ?? b.sektor.heroFoto;
   return (
     <section className="relative isolate overflow-hidden bg-gece text-white">
-      {/* Arka plan: yumuşak ışık ve ince ızgara */}
+      {foto ? (
+        <HeroArkaPlan foto={foto} />
+      ) : (
+      /* Fotoğraf yoksa: yumuşak ışık ve ince ızgara */
       <div aria-hidden className="absolute inset-0 -z-10">
         <div className="suzul absolute -right-40 -top-48 h-[36rem] w-[36rem] rounded-full bg-ana/45 blur-[120px]" />
         <div className="suzul-ters absolute -bottom-56 -left-40 h-[28rem] w-[28rem] rounded-full bg-sky-500/15 blur-[120px]" />
@@ -289,9 +294,14 @@ function Hero({
         </div>
         <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_at_top_right,black_20%,transparent_70%)]" />
       </div>
+      )}
 
-      <div className="kap grid gap-12 pb-14 pt-8 sm:pb-20 sm:pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16 lg:pb-24 lg:pt-16">
-        <div>
+      <div
+        className={`kap grid gap-12 pb-14 sm:pb-20 lg:items-center lg:gap-16 lg:pb-24 ${
+          foto ? 'pt-44 sm:pt-56 md:pt-16 lg:pt-24 lg:pb-28' : 'pt-8 sm:pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:pt-16'
+        }`}
+      >
+        <div className={foto ? 'max-w-[38rem] [text-shadow:0_1px_18px_rgb(0_0_0/0.35)]' : undefined}>
           {kirinti && (
             <nav aria-label="Sayfa yolu" className="mb-6 text-[0.8rem] text-white/60">
               <ol className="flex flex-wrap items-center gap-1.5">
@@ -330,10 +340,16 @@ function Hero({
             <a
               href={tel}
               data-olay="telefon"
-              className="parilti group inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-white px-7 text-[1.05rem] font-bold text-gece shadow-[0_18px_40px_-18px_rgb(255_255_255/0.6)] transition-transform hover:-translate-y-0.5"
+              className="parilti group inline-flex min-h-16 items-center gap-3.5 rounded-full bg-white py-2 pl-2 pr-7 text-gece shadow-[0_18px_40px_-16px_rgb(220_38_38/0.55)] ring-2 ring-red-500/30 transition-transform [text-shadow:none] hover:-translate-y-0.5"
             >
-              <Phone aria-hidden className="zil h-5 w-5" />
-              {firma.telefon}
+              <span className="relative grid h-12 w-12 shrink-0 place-items-center rounded-full bg-red-600 text-white">
+                <span aria-hidden className="nabiz-kirmizi absolute inset-0 rounded-full bg-red-500" />
+                <Phone aria-hidden className="zil relative h-5 w-5" />
+              </span>
+              <span className="flex flex-col text-left leading-tight">
+                <span className="text-[0.78rem] font-bold uppercase tracking-[0.08em] text-red-600">Hemen ustayı arayın</span>
+                <span className="text-[1.15rem] font-extrabold tracking-tight">{firma.telefon}</span>
+              </span>
             </a>
             <a
               href={b.wa(waMesaj)}
@@ -357,11 +373,53 @@ function Hero({
           )}
         </div>
 
-        <div style={{ '--gecikme': '250ms' } as CSSProperties} className="giris relative hidden lg:block">
-          {gorsel}
-        </div>
+        {!foto && (
+          <div style={{ '--gecikme': '250ms' } as CSSProperties} className="giris relative hidden lg:block">
+            {gorsel}
+          </div>
+        )}
       </div>
     </section>
+  );
+}
+
+/**
+ * Hero fotoğrafı. Mobilde öznenin olduğu sağ kırpım üstte görünür, metin altta koyu zemine oturur;
+ * masaüstünde metnin olduğu sol taraf soldan sağa koyulaşan bir geçişle okunur kalır.
+ */
+function HeroArkaPlan({ foto }: { foto: HeroFoto }) {
+  const k = `/hero/${foto.ad}`;
+  // Fotoğraf sayfanın en büyük öğesi (LCP): HTML'in başında, ekrana uygun tek dosya önceden istenir.
+  preload(`${k}-dar-720.avif`, { as: 'image', type: 'image/avif', media: '(max-width: 767px)', fetchPriority: 'high' });
+  preload(`${k}-genis-1376.avif`, {
+    as: 'image',
+    type: 'image/avif',
+    media: '(min-width: 768px)',
+    imageSrcSet: `${k}-genis-960.avif 960w, ${k}-genis-1376.avif 1376w`,
+    imageSizes: '100vw',
+    fetchPriority: 'high',
+  });
+  return (
+    <div className="absolute inset-0 -z-10">
+      <picture>
+        <source media="(max-width: 767px)" type="image/avif" srcSet={`${k}-dar-720.avif`} />
+        <source media="(max-width: 767px)" type="image/webp" srcSet={`${k}-dar-720.webp`} />
+        <source type="image/avif" srcSet={`${k}-genis-960.avif 960w, ${k}-genis-1376.avif 1376w`} sizes="100vw" />
+        <source type="image/webp" srcSet={`${k}-genis-960.webp 960w, ${k}-genis-1376.webp 1376w`} sizes="100vw" />
+        {/* Dosyalar önceden optimize edildi (scripts/hero-foto.mjs), sunucu dönüşümü gerekmiyor */}
+        <img
+          src={`${k}-genis-1376.webp`}
+          alt={foto.alt}
+          fetchPriority="high"
+          className="h-[19rem] w-full object-cover object-top sm:h-[24rem] md:h-full md:object-[75%_center]"
+        />
+      </picture>
+      {/* Mobil: fotoğrafın alt kenarı koyu zemine erir */}
+      <div className="absolute inset-x-0 top-0 h-[19rem] bg-gradient-to-b from-gece/30 via-gece/40 to-gece sm:h-[24rem] md:hidden" />
+      {/* Masaüstü: solda metin için koyu, sağda fotoğraf açık */}
+      <div className="absolute inset-0 hidden bg-gradient-to-r from-gece via-gece/85 to-gece/5 md:block lg:via-gece/75" />
+      <div className="absolute inset-0 hidden bg-gradient-to-t from-gece/60 via-transparent to-gece/30 md:block" />
+    </div>
   );
 }
 

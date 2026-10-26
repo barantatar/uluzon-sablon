@@ -106,6 +106,8 @@ export interface Sektor {
   seoAciklama: string;
   /** schema.org işletme türü */
   schemaTuru: string;
+  /** Demo ve fotoğrafı olmayan firmalar için varsayılan hero fotoğrafı */
+  heroFoto?: HeroFoto;
   renk: Renk;
 }
 
@@ -118,6 +120,17 @@ export interface IlceBilgisi {
   mahalleler: string[];
   yapilar: YapiTuru[];
   komsular: string[];
+}
+
+/**
+ * Hero arka plan fotoğrafı. Dosyalar public/hero/ altında şu adlarla durur:
+ *   {ad}-genis-960 / {ad}-genis-1376  (masaüstü, özne sağda)
+ *   {ad}-dar-720                      (mobil kırpım)
+ * her biri .avif ve .webp olarak. scripts/hero-foto.mjs bu dosyaları üretir.
+ */
+export interface HeroFoto {
+  ad: string;
+  alt: string;
 }
 
 export interface Renk {
@@ -166,6 +179,8 @@ export interface Firma {
   aciklama?: string;
   /** İlçeye varış süresi: { Yenişehir: '20-30 dakika' } */
   varisSuresi?: Record<string, string>;
+  /** Firmanın kendi hero fotoğrafı; sektörün fotoğrafını ezer */
+  heroFoto?: HeroFoto;
   /** Firma rengi verilirse sektörün varsayılan rengini ezer */
   renk?: Partial<Renk>;
   siteUrl?: string;

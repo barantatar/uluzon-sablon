@@ -281,6 +281,7 @@ export const tesisat: Sektor = {
   seoBaslik: '{yer} Su Kaçağı Tespiti ve Tesisatçı | {firma}',
   seoAciklama: '{yerde} kırmadan su kaçağı tespiti, tıkanıklık açma ve tesisat onarımı. Fiyat işe başlamadan söylenir. Hemen arayın.',
   schemaTuru: 'Plumber',
+  heroFoto: { ad: 'tesisat', alt: 'Tesisat ustası banyoda termal kamerayla su kaçağı arıyor' },
   renk: {
     ana: '#1d5fd1',
     anaKoyu: '#1748a3',
