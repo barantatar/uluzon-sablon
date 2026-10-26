@@ -32,6 +32,10 @@ Hepsi `firma.config.ts` içinde, kod değişikliği gerekmez:
 2. GA4 mülkü açıp ölçüm kimliğini (`G-…`) alın. İsterseniz Meta piksel kimliğini de ekleyin.
 3. `takip` alanını doldurun. Ziyaretçi çerez onayı verince ölçüm başlar; site her "Hemen Arayın" ve WhatsApp tıklamasını otomatik gönderir. GA4'te olay adları `telefon_tiklama` ve `whatsapp_tiklama`dır.
 
+4. **Uluzon paneli sayacı:** panelde müşterinin sayfasındaki **Site sayacı** kartından satırı kopyalayıp `panel: { anahtar: '...' }` olarak yapıştırın.
+   Bu sayaç çerez onayı beklemez; her Ara ve WhatsApp tıklaması, ziyaretçinin nereden geldiğiyle (reklam, Google Haritalar, Google arama, sosyal medya, doğrudan) firmanın panelinde sayılır.
+   Haritalar'dan geleni ayırmak için Google İşletme Profili'ndeki web sitesi adresini `https://alanadi.com/?utm_source=gbp` olarak girin.
+
 ## 4. Kontrol ve yayın
 
 ```
@@ -44,6 +48,6 @@ Vercel'de yeni proje → bu repo → alan adını bağlayın. Ortam değişkeni 
 
 Yayından sonra:
 - Search Console'a alan adını ekleyip `/sitemap.xml` gönderin.
-- Google İşletme Profili'nde web sitesi olarak alan adını girin.
+- Google İşletme Profili'nde web sitesi olarak alan adını `?utm_source=gbp` ekiyle girin (ör. `https://alanadi.com/?utm_source=gbp`).
 - Paylaşım görselini kontrol edin: alan adını WhatsApp'ta kendinize gönderin.
 - KVKK ve çerez metinleri şablondur; firmanın durumuna uygunluğunu bir hukukçuya kontrol ettirin.

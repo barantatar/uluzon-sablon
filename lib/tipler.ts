@@ -159,6 +159,14 @@ export interface Takip {
   metaPiksel?: string;
 }
 
+/** Uluzon paneli sayacı: tıklamalar firmanın panelinde sayılır. Anahtar panelde müşteri sayfasındaki "Site sayacı" kartındadır. */
+export interface Panel {
+  /** 32 karakterlik olay anahtarı */
+  anahtar: string;
+  /** Panelin adresi; boşsa https://uluzon.com */
+  adres?: string;
+}
+
 /** Köşe stili: firmalar birbirine benzemesin diye kart ve kutu köşeleri değişir */
 export type Kose = 'yumusak' | 'orta' | 'keskin';
 
@@ -171,6 +179,7 @@ export interface Firma {
   logo?: string;
   kose?: Kose;
   takip?: Takip;
+  panel?: Panel;
   /** Ekranda görünen biçim: 0532 123 45 67 */
   telefon: string;
   /** Uluslararası biçimde WhatsApp numarası, boşsa telefondan türetilir */
