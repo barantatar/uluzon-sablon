@@ -10,6 +10,7 @@ import AcikRozet from './acik-rozet';
 import KacakTesti from './kacak-testi';
 import TermalGorsel from './termal-gorsel';
 import WhatsappLogo from './whatsapp-logo';
+import OtomatikKaydir from './otomatik-kaydir';
 
 /* ------------------------------------------------------------------ */
 /* Sayfalar                                                            */
@@ -183,11 +184,13 @@ function Ust({ b }: { b: Baglam }) {
         <a
           href={tel}
           data-olay="telefon"
-          className="parilti inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-gece px-4 text-[0.9rem] font-bold text-white transition-colors hover:bg-ana"
+          aria-label={`Ara: ${firma.telefon}`}
+          className="parilti group inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-gece py-1 pl-1 pr-3.5 text-[0.84rem] font-bold tabular-nums tracking-tight text-white transition-colors hover:bg-ana sm:pr-4 sm:text-[0.9rem]"
         >
-          <Phone aria-hidden className="zil h-4 w-4" />
-          <span className="sm:hidden">Ara</span>
-          <span className="hidden sm:inline">{firma.telefon}</span>
+          <span aria-hidden className="grid h-8 w-8 place-items-center rounded-full bg-white/10 ring-1 ring-white/15 transition-colors group-hover:bg-white/20">
+            <Phone className="zil h-3.5 w-3.5" />
+          </span>
+          {firma.telefon}
         </a>
       </div>
     </header>
@@ -346,11 +349,8 @@ function Hero({
               aria-label={`Ustayı hemen arayın: ${firma.telefon}`}
               className="parilti inline-flex h-12 items-center gap-2.5 rounded-full bg-white pl-4 pr-5 text-[0.95rem] font-bold text-gece shadow-[0_10px_30px_-12px_rgb(0_0_0/0.55)] transition-transform hover:-translate-y-0.5"
             >
-              {/* Aciliyet: küçük, canlı kırmızı nokta */}
-              <span aria-hidden className="relative flex h-2.5 w-2.5">
-                <span className="nabiz-kirmizi absolute inset-0 rounded-full bg-red-500" />
-                <span className="relative h-2.5 w-2.5 rounded-full bg-red-500" />
-              </span>
+              {/* Aciliyet: kırmızı, ara ara çalan telefon */}
+              <Phone aria-hidden className="zil h-[1.05rem] w-[1.05rem] text-red-500" strokeWidth={2.25} />
               <span className="sm:hidden">Hemen arayın</span>
               <span className="hidden sm:inline">Ustayı hemen arayın</span>
             </a>
@@ -439,7 +439,7 @@ function HizmetSeridi({ b }: { b: Baglam }) {
         className="giris rounded-[22px] border border-white/12 bg-gece/50 p-2 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.7)] backdrop-blur-xl"
       >
         <p className="px-3 pb-1.5 pt-2 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-white/50">Ne için arıyorsunuz?</p>
-        <ul className="-mx-2 flex snap-x gap-1.5 overflow-x-auto px-2 pb-1 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0">
+        <OtomatikKaydir className="-mx-2 flex snap-x gap-1.5 overflow-x-auto px-2 pb-1 [mask-image:linear-gradient(to_right,black_82%,transparent)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0 lg:[mask-image:none]">
           {sektor.hizmetler.map((h) => (
             <li key={h.slug} className="shrink-0 snap-start">
               <a
@@ -453,7 +453,7 @@ function HizmetSeridi({ b }: { b: Baglam }) {
               </a>
             </li>
           ))}
-        </ul>
+        </OtomatikKaydir>
       </nav>
     </div>
   );
