@@ -28,10 +28,12 @@ export default function TermalGorsel() {
       </defs>
       <rect width="400" height="260" fill="url(#t-zemin)" />
       <path d="M-10 200H150Q170 200 170 180V120Q170 100 190 100H410" fill="none" stroke="url(#t-boru)" strokeWidth="16" strokeOpacity="0.55" filter="url(#t-bulanik)" />
-      <circle cx="262" cy="104" r="78" fill="url(#t-sicak)" filter="url(#t-bulanik)" />
+      <circle className="sicak-nokta" cx="262" cy="104" r="78" fill="url(#t-sicak)" filter="url(#t-bulanik)" />
       <rect width="400" height="260" fill="url(#t-fayans)" />
+      <rect className="svg-tarama" x="0" y="8" width="400" height="2" fill="#7dd3fc" fillOpacity="0.55" />
       <g stroke="#fff" strokeWidth="1.5" fill="none">
         <circle cx="262" cy="104" r="18" />
+        <circle className="sicak-nokta" cx="262" cy="104" r="30" strokeOpacity="0.35" />
         <path d="M262 76v14M262 118v14M234 104h14M276 104h14" />
       </g>
       <g>

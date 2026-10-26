@@ -96,7 +96,7 @@ function Kabuk({ b, children }: { b: Baglam; children: ReactNode }) {
         rel="noopener noreferrer"
         data-olay="whatsapp"
         aria-label="WhatsApp’tan yazın"
-        className="fixed bottom-5 right-5 z-50 grid h-15 w-15 place-items-center rounded-full bg-whatsapp text-white shadow-[0_10px_30px_-6px_rgb(18_140_75/0.6)] transition-transform hover:scale-105 sm:bottom-7 sm:right-7"
+        className="nabiz giris fixed bottom-5 right-5 z-50 grid h-15 w-15 place-items-center rounded-full bg-whatsapp text-white shadow-[0_10px_30px_-6px_rgb(18_140_75/0.6)] transition-transform hover:scale-105 sm:bottom-7 sm:right-7"
       >
         <WhatsappLogo className="h-8 w-8" />
       </a>
@@ -120,7 +120,7 @@ function DemoBandi({ b }: { b: Baglam }) {
 function Ust({ b }: { b: Baglam }) {
   const { firma, sektor, yol, tel } = b;
   return (
-    <header className="sticky top-0 z-40 border-b border-cizgi/70 bg-white/85 backdrop-blur-xl">
+    <header className="ust-giris ust-golge sticky top-0 z-40 border-b border-cizgi/70 bg-white/85 backdrop-blur-xl">
       <div className="kap flex h-16 items-center justify-between gap-4">
         <a href={yol('/')} className="flex min-w-0 items-center gap-3">
           <span aria-hidden className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-gece text-[0.85rem] font-extrabold tracking-tight text-white">
@@ -134,17 +134,17 @@ function Ust({ b }: { b: Baglam }) {
           </span>
         </a>
         <nav aria-label="Ana menü" className="hidden items-center gap-1 text-[0.9rem] font-semibold text-metin lg:flex">
-          <a href={yol('/', 'hizmetler')} className="rounded-full px-3.5 py-2 hover:text-murekkep">Hizmetler</a>
-          <a href={yol('/', 'nasil')} className="rounded-full px-3.5 py-2 hover:text-murekkep">Nasıl çalışıyoruz</a>
-          <a href={yol('/', 'bolgeler')} className="rounded-full px-3.5 py-2 hover:text-murekkep">Bölgeler</a>
-          <a href={yol('/', 'sss')} className="rounded-full px-3.5 py-2 hover:text-murekkep">SSS</a>
+          <a href={yol('/', 'hizmetler')} className="menu-link rounded-full px-3.5 py-2 hover:text-murekkep">Hizmetler</a>
+          <a href={yol('/', 'nasil')} className="menu-link rounded-full px-3.5 py-2 hover:text-murekkep">Nasıl çalışıyoruz</a>
+          <a href={yol('/', 'bolgeler')} className="menu-link rounded-full px-3.5 py-2 hover:text-murekkep">Bölgeler</a>
+          <a href={yol('/', 'sss')} className="menu-link rounded-full px-3.5 py-2 hover:text-murekkep">SSS</a>
         </nav>
         <a
           href={tel}
           data-olay="telefon"
-          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-gece px-4 text-[0.9rem] font-bold text-white transition-colors hover:bg-ana"
+          className="parilti inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-gece px-4 text-[0.9rem] font-bold text-white transition-colors hover:bg-ana"
         >
-          <Phone aria-hidden className="h-4 w-4" />
+          <Phone aria-hidden className="zil h-4 w-4" />
           <span className="sm:hidden">Ara</span>
           <span className="hidden sm:inline">{firma.telefon}</span>
         </a>
@@ -239,8 +239,11 @@ function Hero({
     <section className="relative isolate overflow-hidden bg-gece text-white">
       {/* Arka plan: yumuşak ışık ve ince ızgara */}
       <div aria-hidden className="absolute inset-0 -z-10">
-        <div className="absolute -right-40 -top-48 h-[36rem] w-[36rem] rounded-full bg-ana/45 blur-[120px]" />
-        <div className="absolute -bottom-56 -left-40 h-[28rem] w-[28rem] rounded-full bg-sky-500/15 blur-[120px]" />
+        <div className="suzul absolute -right-40 -top-48 h-[36rem] w-[36rem] rounded-full bg-ana/45 blur-[120px]" />
+        <div className="suzul-ters absolute -bottom-56 -left-40 h-[28rem] w-[28rem] rounded-full bg-sky-500/15 blur-[120px]" />
+        <div className="tarama absolute inset-0">
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-sky-300/40 to-transparent shadow-[0_0_24px_2px_rgb(125_211_252/0.25)]" />
+        </div>
         <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_at_top_right,black_20%,transparent_70%)]" />
       </div>
 
@@ -266,25 +269,27 @@ function Hero({
             </nav>
           )}
 
-          <p className="inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.06] px-3.5 py-1.5 text-[0.78rem] font-medium text-white/85 backdrop-blur">
+          <p className="giris inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.06] px-3.5 py-1.5 text-[0.78rem] font-medium text-white/85 backdrop-blur">
             {firma.saatler && !firma.yirmiDortSaat ? <AcikRozet saatler={firma.saatler} yedekMetin={saatMetni} /> : saatMetni}
             <span aria-hidden className="h-3 w-px bg-white/20" />
             {yer === firma.sehir ? firma.sehir : `${yer}, ${firma.sehir}`}
           </p>
 
-          <h1 className="mt-6 text-[2.35rem] font-extrabold leading-[1.04] tracking-[-0.035em] sm:text-[3.4rem] lg:text-[3.9rem]">
+          <h1 className="giris-baslik mt-6 text-[2.35rem] font-extrabold leading-[1.04] tracking-[-0.035em] sm:text-[3.4rem] lg:text-[3.9rem]">
             {doldur(baslik.on, firma, yer)}{' '}
-            <span className="bg-gradient-to-r from-sky-300 via-sky-200 to-white bg-clip-text text-transparent">{baslik.vurgu}</span>
+            <span className="isilti bg-gradient-to-r from-sky-300 via-white to-sky-300 bg-clip-text text-transparent">{baslik.vurgu}</span>
           </h1>
-          <p className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-white/70 sm:text-lg">{aciklama}</p>
+          <p style={{ '--gecikme': '180ms' } as CSSProperties} className="giris mt-5 max-w-xl text-[1.05rem] leading-relaxed text-white/70 sm:text-lg">
+            {aciklama}
+          </p>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+          <div style={{ '--gecikme': '280ms' } as CSSProperties} className="giris mt-9 flex flex-col gap-3 sm:flex-row">
             <a
               href={tel}
               data-olay="telefon"
-              className="group inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-white px-7 text-[1.05rem] font-bold text-gece shadow-[0_18px_40px_-18px_rgb(255_255_255/0.6)] transition-transform hover:-translate-y-0.5"
+              className="parilti group inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-white px-7 text-[1.05rem] font-bold text-gece shadow-[0_18px_40px_-18px_rgb(255_255_255/0.6)] transition-transform hover:-translate-y-0.5"
             >
-              <Phone aria-hidden className="h-5 w-5" />
+              <Phone aria-hidden className="zil h-5 w-5" />
               {firma.telefon}
             </a>
             <a
@@ -300,7 +305,7 @@ function Hero({
           </div>
 
           {firma.googlePuani && (
-            <p className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.9rem] text-white/70">
+            <p style={{ '--gecikme': '380ms' } as CSSProperties} className="giris mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.9rem] text-white/70">
               <Yildizlar puan={firma.googlePuani.puan} />
               <span>
                 <strong className="font-bold text-white">{firma.googlePuani.puan.toLocaleString('tr-TR')}</strong> · {firma.googlePuani.yorumSayisi} Google yorumu
@@ -309,7 +314,7 @@ function Hero({
           )}
         </div>
 
-        <div className="relative hidden lg:block">
+        <div style={{ '--gecikme': '250ms' } as CSSProperties} className="giris relative hidden lg:block">
           <TermalKart />
         </div>
       </div>
@@ -336,19 +341,17 @@ function TermalKart() {
 
 function GuvenSeridi({ b }: { b: Baglam }) {
   const { firma, sektor } = b;
-  const maddeler = [
-    ...sektor.guvenMaddeleri,
-    firma.garantiAy ? `${firma.garantiAy} ay garanti` : undefined,
-  ].filter(Boolean) as string[];
+  const maddeler = [...sektor.guvenMaddeleri];
+  if (firma.garantiAy) maddeler.push({ ikon: 'garanti', metin: `${firma.garantiAy} ay garanti` });
   return (
     <div className="border-b border-cizgi bg-white">
       <ul className="kap grid grid-cols-2 gap-x-4 gap-y-3 py-5 text-[0.88rem] font-semibold text-murekkep sm:flex sm:flex-wrap sm:justify-between">
         {maddeler.map((m) => (
-          <li key={m} className="flex items-center gap-2">
-            <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-ana-acik">
-              <Check aria-hidden className="h-3 w-3 text-ana" strokeWidth={3} />
+          <li key={m.metin} className="flex items-center gap-2.5">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ana-acik text-ana">
+              <Ikon ad={m.ikon} className="h-4 w-4" />
             </span>
-            {m}
+            {m.metin}
           </li>
         ))}
       </ul>

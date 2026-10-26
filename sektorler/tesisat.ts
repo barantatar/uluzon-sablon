@@ -6,7 +6,11 @@ export const tesisat: Sektor = {
   etiket: 'Tesisat · Su kaçağı',
   baslik: { on: '{yerde} su kaçağını', vurgu: 'kırmadan buluyoruz.' },
   aciklama: 'Kaçağın yerini cihazla tespit ediyor, yalnızca o noktayı açıyoruz. Fiyatı işe başlamadan söylüyor, evinizi temiz teslim ediyoruz.',
-  guvenMaddeleri: ['Cihazla tespit', 'Önce fiyat', 'Temiz işçilik'],
+  guvenMaddeleri: [
+    { ikon: 'cihaz', metin: 'Cihazla tespit' },
+    { ikon: 'fiyat', metin: 'Önce fiyat' },
+    { ikon: 'temiz', metin: 'Temiz işçilik' },
+  ],
   ilkAdimlar: {
     soru: 'Şu an su mu akıyor? Biz gelene kadar yapmanız gerekenler',
     adimlar: [

@@ -68,7 +68,7 @@ export interface Sektor {
   baslik: Baslik;
   aciklama: string;
   /** Hero altındaki kısa güven maddeleri */
-  guvenMaddeleri: string[];
+  guvenMaddeleri: { ikon: Ikon; metin: string }[];
   /** Acil durumda ilk yapılacaklar */
   ilkAdimlar: { soru: string; adimlar: string[] };
   hizmetler: Hizmet[];
