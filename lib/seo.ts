@@ -4,6 +4,12 @@ import { sayfaYolu, type Baglam } from './sayfa';
 
 export function sayfaBasligi(b: Baglam): { baslik: string; aciklama: string } {
   const { sektor, firma, sayfa, yer } = b;
+  if (sayfa.tur === 'yasal') {
+    return {
+      baslik: `${sayfa.metin === 'kvkk' ? 'KVKK Aydınlatma Metni' : 'Çerez Politikası'} | ${firma.ad}`,
+      aciklama: `${firma.ad} kişisel verilerin korunması ve çerez kullanımı hakkında bilgilendirme.`,
+    };
+  }
   if (sayfa.tur === 'hizmet' || sayfa.tur === 'hizmetIlce') {
     return {
       baslik: `${yer} ${sayfa.hizmet.ad} | ${firma.ad}`,
@@ -20,7 +26,11 @@ export function sayfaMetadata(b: Baglam): Metadata {
     title: baslik,
     description: aciklama,
     alternates: url ? { canonical: url } : undefined,
-    openGraph: { title: baslik, description: aciklama, type: 'website', locale: 'tr_TR', url },
+    // Sayfa openGraph verdiğinde kök görsel devralınmaz; bu yüzden açıkça eklenir (app/opengraph-image.tsx).
+    openGraph: { title: baslik, description: aciklama, type: 'website', locale: 'tr_TR', url, siteName: b.firma.ad, images: ['/opengraph-image'] },
+    twitter: { card: 'summary_large_image', title: baslik, description: aciklama, images: ['/opengraph-image'] },
+    // Yasal metinler aranmaz; bağlantıları izlenir.
+    robots: b.sayfa.tur === 'yasal' ? { index: false, follow: true } : undefined,
   };
 }
 

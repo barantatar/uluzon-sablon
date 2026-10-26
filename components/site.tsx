@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { preload } from 'react-dom';
 import { ArrowRight, Check, ChevronDown, ChevronRight, Clock, MapPin, Phone, Star, TriangleAlert, X } from 'lucide-react';
-import type { Baslik as BaslikTipi, HeroFoto, Hizmet, Soru, Yorum } from '@/lib/tipler';
+import type { Baslik as BaslikTipi, HeroFoto, Hizmet, Kose, Soru, Yorum } from '@/lib/tipler';
 import { DEMO, ULUZON_URL, basHarfler, doldur, renkler, slugla } from '@/lib/firma';
 import { sayfaYolu, type Baglam } from '@/lib/sayfa';
 import { ilceBilgisi } from '@/bolgeler';
@@ -11,6 +11,8 @@ import KacakTesti from './kacak-testi';
 import TermalGorsel from './termal-gorsel';
 import WhatsappLogo from './whatsapp-logo';
 import OtomatikKaydir from './otomatik-kaydir';
+import Takip, { CerezTercihleri } from './takip';
+import { YASAL_YOLLAR, type YasalMetin } from '@/lib/sayfa';
 
 /* ------------------------------------------------------------------ */
 /* Sayfalar                                                            */
@@ -20,7 +22,15 @@ export default function Site({ b }: { b: Baglam }) {
   const { sayfa } = b;
   return (
     <Kabuk b={b}>
-      {sayfa.tur === 'ana' ? <AnaSayfa b={b} /> : sayfa.tur === 'ilce' ? <IlceSayfasi b={b} /> : <HizmetSayfasi b={b} hizmet={sayfa.hizmet} />}
+      {sayfa.tur === 'ana' ? (
+        <AnaSayfa b={b} />
+      ) : sayfa.tur === 'ilce' ? (
+        <IlceSayfasi b={b} />
+      ) : sayfa.tur === 'yasal' ? (
+        <YasalSayfa b={b} metin={sayfa.metin} />
+      ) : (
+        <HizmetSayfasi b={b} hizmet={sayfa.hizmet} />
+      )}
     </Kabuk>
   );
 }
@@ -118,16 +128,25 @@ function HizmetSayfasi({ b, hizmet }: { b: Baglam; hizmet: Hizmet }) {
 /* Kabuk: renkler, üst menü, alt bilgi, WhatsApp butonu                */
 /* ------------------------------------------------------------------ */
 
-function Kabuk({ b, children }: { b: Baglam; children: ReactNode }) {
+// Köşe stili Tailwind'in yarıçap değişkenlerini firmaya göre değiştirir: bütün kart ve kutular birlikte değişir.
+const KOSELER: Record<Kose, Record<string, string>> = {
+  yumusak: {},
+  orta: { '--radius-lg': '0.375rem', '--radius-xl': '0.5rem', '--radius-2xl': '0.75rem', '--radius-3xl': '1rem' },
+  keskin: { '--radius-lg': '0.25rem', '--radius-xl': '0.25rem', '--radius-2xl': '0.375rem', '--radius-3xl': '0.5rem' },
+};
+
+export function Kabuk({ b, children }: { b: Baglam; children: ReactNode }) {
   const r = renkler(b.sektor, b.firma);
   const stil = {
     '--renk-ana': r.ana,
     '--renk-ana-koyu': r.anaKoyu,
     '--renk-ana-acik': r.anaAcik,
     '--renk-gece': r.gece,
+    ...KOSELER[b.firma.kose ?? 'yumusak'],
   } as CSSProperties;
   return (
     <div style={stil}>
+      {!DEMO && b.firma.takip && <Takip takip={b.firma.takip} politika={b.yol(`/${YASAL_YOLLAR.cerez}`)} />}
       {DEMO && <DemoBandi b={b} />}
       <Ust b={b} />
       <main id="icerik">{children}</main>
@@ -165,10 +184,16 @@ function Ust({ b }: { b: Baglam }) {
     <header className="ust-giris ust-golge sticky top-0 z-40 border-b border-cizgi/70 bg-white/85 backdrop-blur-xl">
       <div className="kap flex h-16 items-center justify-between gap-4">
         <a href={yol('/')} className="flex min-w-0 items-center gap-3">
-          <span aria-hidden className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-gece text-[0.85rem] font-extrabold tracking-tight text-white">
-            {basHarfler(firma.ad)}
-          </span>
-          <span className="min-w-0">
+          {firma.logo ? (
+            // Logo küçük ve yerel bir dosya (SVG önerilir); görüntü optimizasyonu gerekmez
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={firma.logo} alt={firma.ad} height={36} className="h-9 w-auto max-w-[9rem] shrink-0 object-contain" />
+          ) : (
+            <span aria-hidden className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-gece text-[0.85rem] font-extrabold tracking-tight text-white">
+              {basHarfler(firma.ad)}
+            </span>
+          )}
+          <span className={firma.logo ? 'sr-only' : 'min-w-0'}>
             <span className="block truncate text-[0.95rem] font-extrabold leading-tight tracking-tight text-murekkep">{firma.ad}</span>
             <span className="block truncate text-[0.72rem] font-medium text-soluk">
               {sektor.etiket} · {firma.sehir}
@@ -247,7 +272,12 @@ function Alt({ b }: { b: Baglam }) {
       </div>
       <div className="border-t border-cizgi">
         <div className="kap flex flex-col gap-2 py-5 pr-24 text-[0.8rem] text-soluk sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} {firma.ad}</p>
+          <p className="flex flex-wrap gap-x-4 gap-y-1">
+            <span>© {new Date().getFullYear()} {firma.unvan ?? firma.ad}</span>
+            <a href={yol(`/${YASAL_YOLLAR.kvkk}`)} className="hover:text-ana">KVKK aydınlatma metni</a>
+            <a href={yol(`/${YASAL_YOLLAR.cerez}`)} className="hover:text-ana">Çerez politikası</a>
+            {!DEMO && firma.takip && <CerezTercihleri />}
+          </p>
           <p>
             Web sitesi ve dijital büyüme:{' '}
             <a href={ULUZON_URL} className="font-semibold text-metin hover:text-ana">
@@ -345,7 +375,7 @@ function Hero({
             {doldur(baslik.on, firma, yer)}{' '}
             <span className="isilti bg-gradient-to-r from-sky-300 via-white to-sky-300 bg-clip-text text-transparent">{baslik.vurgu}</span>
           </h1>
-          <p style={{ '--gecikme': '180ms' } as CSSProperties} className="giris mt-5 max-w-xl text-[1.05rem] leading-relaxed text-white/70 sm:text-lg">
+          <p className="giris-baslik mt-5 max-w-xl text-[1.05rem] leading-relaxed text-white/70 sm:text-lg">
             {aciklama}
           </p>
 
@@ -998,5 +1028,131 @@ function Yildizlar({ puan }: { puan: number }) {
         <Star key={i} aria-hidden className={`h-4 w-4 ${i < Math.round(puan) ? 'fill-yildiz text-yildiz' : 'fill-cizgi text-cizgi'}`} />
       ))}
     </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Yasal metinler ve bulunamadı sayfası                                */
+/* ------------------------------------------------------------------ */
+
+// Firma bilgilerinden üretilen şablon metinler. Yayına almadan önce bir hukukçuya göstermek önerilir.
+function YasalSayfa({ b, metin }: { b: Baglam; metin: YasalMetin }) {
+  const { firma } = b;
+  const sorumlu = firma.unvan ?? firma.ad;
+  const iletisim = [firma.adres, firma.eposta, firma.telefon].filter(Boolean).join(' · ');
+  const takipVar = Boolean(firma.takip);
+  const servisler = [
+    firma.takip?.ga4 && 'Google Analytics (ziyaret istatistikleri)',
+    firma.takip?.googleAds && 'Google Ads (reklam dönüşüm ölçümü)',
+    firma.takip?.metaPiksel && 'Meta Pikseli (Facebook/Instagram reklam ölçümü)',
+  ].filter(Boolean) as string[];
+
+  const bolumler: { baslik: string; paragraflar: string[] }[] =
+    metin === 'kvkk'
+      ? [
+          {
+            baslik: 'Veri sorumlusu',
+            paragraflar: [`6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında veri sorumlusu ${sorumlu}’dur. İletişim: ${iletisim}.`],
+          },
+          {
+            baslik: 'İşlenen veriler ve amaçları',
+            paragraflar: [
+              'Bu sitede form bulunmaz; bize telefonla ya da WhatsApp üzerinden ulaştığınızda paylaştığınız ad, telefon numarası, adres ve sorunla ilgili bilgiler (fotoğraf dahil) yalnızca talebinizi karşılamak, randevu ve fiyat bilgisi vermek ve yapılan işin garantisini takip etmek amacıyla işlenir.',
+              'Siteyi ziyaret ettiğinizde barındırma sağlayıcısı tarafından güvenlik amacıyla IP adresi ve tarayıcı bilgisi gibi teknik kayıtlar tutulabilir.',
+              takipVar
+                ? 'Onay vermeniz halinde reklamlarımızın etkinliğini ölçmek için çerezler kullanılır; ayrıntılar Çerez Politikası’ndadır.'
+                : 'Sitede reklam veya analiz çerezi kullanılmaz.',
+            ],
+          },
+          {
+            baslik: 'Hukuki sebep',
+            paragraflar: [
+              'Verileriniz KVKK m.5/2 (c) uyarınca bir sözleşmenin kurulması ve ifası, (f) uyarınca meşru menfaat ve çerezler için m.5/1 uyarınca açık rızanız hukuki sebeplerine dayanılarak işlenir.',
+            ],
+          },
+          {
+            baslik: 'Aktarım',
+            paragraflar: [
+              'Verileriniz satılmaz ve pazarlama amacıyla üçüncü kişilerle paylaşılmaz. Yalnızca yasal zorunluluk halinde yetkili kurumlarla ve hizmetin yürütülmesi için kullanılan iletişim ve barındırma hizmetleriyle sınırlı olarak paylaşılabilir; bu hizmetlerin bir kısmının sunucuları yurt dışında bulunabilir.',
+            ],
+          },
+          {
+            baslik: 'Haklarınız',
+            paragraflar: [
+              'KVKK m.11 uyarınca verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme, düzeltilmesini veya silinmesini isteme, itiraz etme ve zararın giderilmesini talep etme haklarına sahipsiniz.',
+              `Başvurularınızı ${firma.eposta ? `${firma.eposta} adresine e-posta ile ya da ` : ''}${firma.adres ? `${firma.adres} adresine yazılı olarak ` : 'yukarıdaki iletişim bilgileriyle '}iletebilirsiniz. Başvurular en geç 30 gün içinde yanıtlanır.`,
+            ],
+          },
+        ]
+      : [
+          {
+            baslik: 'Çerez nedir?',
+            paragraflar: ['Çerezler, ziyaret ettiğiniz sitenin tarayıcınıza kaydettiği küçük dosyalardır.'],
+          },
+          {
+            baslik: 'Zorunlu kayıtlar',
+            paragraflar: [
+              'Sitenin çalışması için çerez gerekmez. Çerez tercihinizi hatırlamak için tarayıcınızda yalnızca tercihinizi içeren küçük bir kayıt tutulur.',
+            ],
+          },
+          {
+            baslik: 'Ölçüm ve reklam çerezleri',
+            paragraflar: takipVar
+              ? [
+                  `Yalnızca onay verirseniz şu hizmetler yüklenir: ${servisler.join(', ')}. Bu çerezler arama ve WhatsApp butonlarına tıklanıp tıklanmadığını ölçerek reklamlarımızın işe yarayıp yaramadığını anlamamızı sağlar.`,
+                  'Onay vermezseniz bu hizmetler hiç yüklenmez. Tercihinizi sayfanın altındaki “Çerez tercihleri” bağlantısından istediğiniz zaman değiştirebilirsiniz.',
+                ]
+              : ['Bu sitede ölçüm veya reklam çerezi kullanılmaz.'],
+          },
+          {
+            baslik: 'Tarayıcı ayarları',
+            paragraflar: ['Çerezleri tarayıcınızın ayarlarından da silebilir veya engelleyebilirsiniz.'],
+          },
+        ];
+
+  return (
+    <section className="kap max-w-3xl py-14 sm:py-20">
+      <p className="text-[0.75rem] font-bold uppercase tracking-[0.16em] text-ana">{firma.ad}</p>
+      <h1 className="mt-3 text-[2rem] font-extrabold tracking-[-0.03em] text-murekkep sm:text-[2.6rem]">
+        {metin === 'kvkk' ? 'KVKK Aydınlatma Metni' : 'Çerez Politikası'}
+      </h1>
+      <div className="mt-10 space-y-9">
+        {bolumler.map((bl) => (
+          <div key={bl.baslik}>
+            <h2 className="text-lg font-bold text-murekkep">{bl.baslik}</h2>
+            {bl.paragraflar.map((p) => (
+              <p key={p} className="mt-3 leading-relaxed text-metin">
+                {p}
+              </p>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function SayfaBulunamadi({ b }: { b: Baglam }) {
+  return (
+    <Kabuk b={b}>
+      <section className="relative isolate overflow-hidden bg-gece text-white">
+        <div aria-hidden className="suzul absolute -right-40 -top-48 -z-10 h-[30rem] w-[30rem] rounded-full bg-ana/45 blur-[120px]" />
+        <div className="kap py-20 sm:py-28">
+          <p className="text-[0.8rem] font-semibold uppercase tracking-[0.16em] text-white/55">404</p>
+          <h1 className="mt-4 max-w-2xl text-[2.2rem] font-extrabold leading-tight tracking-[-0.035em] sm:text-[3.2rem]">Aradığınız sayfa bulunamadı.</h1>
+          <p className="mt-4 max-w-xl text-white/70">Sorununuzu anlatmak için bizi doğrudan arayabilir ya da hizmetlerimize göz atabilirsiniz.</p>
+          <div className="mt-8 flex flex-wrap gap-2.5">
+            <a href={b.tel} data-olay="telefon" className="inline-flex h-12 items-center gap-2.5 rounded-full bg-white px-5 font-bold text-gece">
+              <Phone aria-hidden className="h-[1.05rem] w-[1.05rem] text-red-500" strokeWidth={2.25} />
+              Hemen Arayın
+            </a>
+            <a href={b.yol('/')} className="inline-flex h-12 items-center rounded-full border border-white/20 bg-white/[0.08] px-5 font-semibold">
+              Ana sayfaya dön
+            </a>
+          </div>
+        </div>
+      </section>
+      <Hizmetler b={b} />
+    </Kabuk>
   );
 }

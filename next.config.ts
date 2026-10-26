@@ -1,5 +1,25 @@
 import type { NextConfig } from 'next';
 
+// İçerik güvenlik politikası: sayfa yalnızca kendi dosyalarını ve onaydan sonra yüklenen
+// ölçüm servislerini (Google, Meta) çalıştırabilir. Next.js satır içi script kullandığı için
+// 'unsafe-inline' gerekir; geliştirme modu ayrıca 'unsafe-eval' ister.
+const GOOGLE = 'https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net https://googleads.g.doubleclick.net https://www.googleadservices.com https://www.google.com https://www.google.com.tr';
+const META = 'https://connect.facebook.net https://www.facebook.com';
+const CSP = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''} ${GOOGLE} ${META}`,
+  "style-src 'self' 'unsafe-inline'",
+  `img-src 'self' data: blob: ${GOOGLE} ${META}`,
+  "font-src 'self'",
+  `connect-src 'self' ${GOOGLE} ${META}`,
+  'frame-src https://td.doubleclick.net https://www.googletagmanager.com',
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "object-src 'none'",
+  'upgrade-insecure-requests',
+].join('; ');
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Reklamdan gelen ziyaretçi ilk kez gelir: CSS'i HTML'e gömmek ilk boyamayı hızlandırır.
@@ -18,6 +38,8 @@ const nextConfig: NextConfig = {
       {
         source: '/:path*',
         headers: [
+          { key: 'Content-Security-Policy', value: CSP },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },

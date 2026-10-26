@@ -10,7 +10,11 @@ export type Sayfa =
   | { tur: 'ana' }
   | { tur: 'ilce'; ilce: string }
   | { tur: 'hizmet'; hizmet: Hizmet }
-  | { tur: 'hizmetIlce'; hizmet: Hizmet; ilce: string };
+  | { tur: 'hizmetIlce'; hizmet: Hizmet; ilce: string }
+  | { tur: 'yasal'; metin: YasalMetin };
+
+export type YasalMetin = 'kvkk' | 'cerez';
+export const YASAL_YOLLAR: Record<YasalMetin, string> = { kvkk: 'kvkk-aydinlatma-metni', cerez: 'cerez-politikasi' };
 
 const BOLGE = 'bolge';
 
@@ -22,6 +26,8 @@ export function sayfaCoz(sektor: Sektor, firma: Firma, parcalar: string[]): Sayf
   const [a, b, ...fazla] = parcalar;
   if (fazla.length) return null;
   if (!a) return { tur: 'ana' };
+  const yasal = (Object.keys(YASAL_YOLLAR) as YasalMetin[]).find((k) => YASAL_YOLLAR[k] === a);
+  if (yasal) return b ? null : { tur: 'yasal', metin: yasal };
   if (a === BOLGE) {
     const ilce = b ? ilceBul(firma, b) : undefined;
     return ilce ? { tur: 'ilce', ilce } : null;
@@ -43,6 +49,8 @@ export function sayfaYolu(s: Sayfa): string {
       return `/${s.hizmet.slug}`;
     case 'hizmetIlce':
       return `/${s.hizmet.slug}/${slugla(s.ilce)}`;
+    case 'yasal':
+      return `/${YASAL_YOLLAR[s.metin]}`;
   }
 }
 
@@ -56,6 +64,12 @@ export function tumSayfalar(sektor: Sektor, firma: Firma): Sayfa[] {
     ]),
   ];
 }
+
+/** Derlemede üretilen ama sitemap'e girmeyen sayfalar */
+export const YASAL_SAYFALAR: Sayfa[] = [
+  { tur: 'yasal', metin: 'kvkk' },
+  { tur: 'yasal', metin: 'cerez' },
+];
 
 /** Sayfanın başlıklarda geçen yeri: ilçe sayfalarında ilçe, diğerlerinde şehir */
 export function sayfaYeri(s: Sayfa, firma: Firma): string {

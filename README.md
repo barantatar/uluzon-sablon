@@ -25,4 +25,7 @@ Her firma sitesi otomatik olarak şu sayfaları üretir (reklamda her grup kendi
 
 ## Gerçek müşteri
 
+Adım adım rehber: [KURULUM.md](KURULUM.md)
+
+
 `firma.config.ts` doldurulur (gerçek Google puanı ve yorumları dahil), `siteUrl` girilir, env olmadan yayınlanır. Site kökte açılır; schema.org verisi, sitemap ve robots otomatik üretilir.

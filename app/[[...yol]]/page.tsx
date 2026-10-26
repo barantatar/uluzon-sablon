@@ -5,7 +5,8 @@ import { ArrowRight } from 'lucide-react';
 import Site from '@/components/site';
 import { FIRMA, SEKTOR } from '@/firma.config';
 import { DEMO, ULUZON_URL } from '@/lib/firma';
-import { baglamKur, sayfaCoz, sayfaYolu, tumSayfalar, yolUret } from '@/lib/sayfa';
+import { YASAL_SAYFALAR, baglamKur, sayfaCoz, sayfaYolu, tumSayfalar, yolUret } from '@/lib/sayfa';
+import { firmaDogrula } from '@/lib/dogrula';
 import { sayfaMetadata, sayfaSchema } from '@/lib/seo';
 import { SEKTORLER, sektorBul } from '@/sektorler';
 
@@ -18,7 +19,9 @@ type Props = { params: Promise<{ yol?: string[] }> };
 
 export function generateStaticParams() {
   if (DEMO) return [{ yol: [] }];
-  return tumSayfalar(sektor(), FIRMA).map((s) => ({ yol: sayfaYolu(s).split('/').filter(Boolean) }));
+  // Gerçek kurulumda ayarlar derlemede kontrol edilir: hata varsa derleme durur, eksikler uyarı olarak yazılır.
+  firmaDogrula(sektor(), FIRMA);
+  return [...tumSayfalar(sektor(), FIRMA), ...YASAL_SAYFALAR].map((s) => ({ yol: sayfaYolu(s).split('/').filter(Boolean) }));
 }
 
 export const dynamicParams = false;
@@ -50,7 +53,9 @@ export default async function Sayfa(props: Props) {
   if (!b) return <DemoListesi />;
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(sayfaSchema(b)).replace(/</g, '\\u003c') }} />
+      {b.sayfa.tur !== 'yasal' && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(sayfaSchema(b)).replace(/</g, '\\u003c') }} />
+      )}
       <Site b={b} />
     </>
   );

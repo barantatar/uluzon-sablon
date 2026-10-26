@@ -83,7 +83,7 @@
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: none; }
 }
-/* Başlık en büyük öğedir (LCP): saydamlık değil yalnızca hareket, ilk boyama gecikmesin */
+/* Başlık ve açıklama en büyük öğe (LCP) olabilir: saydamlık değil yalnızca hareket, ilk boyama gecikmesin */
 @keyframes giris-baslik {
   from { transform: translateY(14px); }
   to { transform: none; }

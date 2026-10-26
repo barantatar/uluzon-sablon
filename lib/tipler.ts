@@ -149,8 +149,28 @@ export interface Yorum {
   metin: string;
 }
 
+/** Firmaya özel ölçüm kimlikleri. Boş bırakılan servis yüklenmez. */
+export interface Takip {
+  /** GA4 ölçüm kimliği: G-XXXXXXXXXX */
+  ga4?: string;
+  /** Google Ads: AW-123456789 ve her dönüşüm işleminin etiketi (Ads > Hedefler > Dönüşümler) */
+  googleAds?: { id: string; telefonEtiketi?: string; whatsappEtiketi?: string };
+  /** Meta (Facebook/Instagram) piksel kimliği */
+  metaPiksel?: string;
+}
+
+/** Köşe stili: firmalar birbirine benzemesin diye kart ve kutu köşeleri değişir */
+export type Kose = 'yumusak' | 'orta' | 'keskin';
+
 export interface Firma {
   ad: string;
+  /** Resmî unvan: KVKK metninde veri sorumlusu olarak geçer. Yoksa firma adı kullanılır. */
+  unvan?: string;
+  eposta?: string;
+  /** public/ altındaki logo dosyası, ör. '/logo.svg'. Yoksa baş harflerden monogram üretilir. */
+  logo?: string;
+  kose?: Kose;
+  takip?: Takip;
   /** Ekranda görünen biçim: 0532 123 45 67 */
   telefon: string;
   /** Uluslararası biçimde WhatsApp numarası, boşsa telefondan türetilir */

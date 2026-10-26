@@ -278,8 +278,8 @@ export const tesisat: Sektor = {
     hayirBaslik: 'Hayır, sayaç durdu',
     hayirMetin: 'Ana tesisatta kaçak görünmüyor. Yine de nem, koku ya da yüksek fatura varsa fotoğraf gönderin, birlikte bakalım.',
   },
-  seoBaslik: '{yer} Su Kaçağı Tespiti ve Tesisatçı | {firma}',
-  seoAciklama: '{yerde} kırmadan su kaçağı tespiti, tıkanıklık açma ve tesisat onarımı. Fiyat işe başlamadan söylenir. Hemen arayın.',
+  seoBaslik: '{yer} Tesisatçı: Su Kaçağı, Tıkanıklık, Tesisat | {firma}',
+  seoAciklama: '{yerde} su kaçağı tespiti, tıkanıklık açma ve tesisat onarımı. Sorunu cihazla buluyor, fiyatı işe başlamadan söylüyoruz. Hemen arayın.',
   schemaTuru: 'Plumber',
   heroFoto: { ad: 'tesisat', alt: 'Tesisat ustası banyoda termal kamerayla su kaçağı arıyor' },
   renk: {
