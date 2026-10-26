@@ -279,7 +279,10 @@ function Hero({
 }) {
   const { firma, yer, yol, tel } = b;
   const saatMetni = firma.yirmiDortSaat ? '7/24 açığız' : firma.calismaSaatleri;
-  const foto = firma.heroFoto ?? b.sektor.heroFoto;
+  // Fotoğraf yalnızca ana sayfada; diğer sayfalar hafif kalır ve sağda kendi kartını gösterir.
+  const foto = b.sayfa.tur === 'ana' ? (firma.heroFoto ?? b.sektor.heroFoto) : undefined;
+  // Fotoğraflı hero'da hizmet kartı fotoğrafı kapatmasın diye alt kenarda şerit olur.
+  const serit = Boolean(foto);
   return (
     <section className="relative isolate overflow-hidden bg-gece text-white">
       {foto ? (
@@ -297,9 +300,9 @@ function Hero({
       )}
 
       <div
-        className={`kap grid gap-12 pb-14 sm:pb-20 lg:items-center lg:gap-16 lg:pb-24 ${
-          foto ? 'pt-44 sm:pt-56 md:pt-16 lg:pt-24 lg:pb-28' : 'pt-8 sm:pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:pt-16'
-        }`}
+        className={`kap grid gap-12 lg:items-center lg:gap-16 ${
+          foto ? 'pt-44 sm:pt-56 md:pt-16 lg:pt-24' : 'pt-8 sm:pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:pt-16'
+        } ${serit ? 'pb-10 lg:pb-16' : foto ? 'pb-14 sm:pb-20 lg:pb-28' : 'pb-14 sm:pb-20 lg:pb-24'}`}
       >
         <div className={foto ? 'max-w-[38rem] [text-shadow:0_1px_18px_rgb(0_0_0/0.35)]' : undefined}>
           {kirinti && (
@@ -336,30 +339,30 @@ function Hero({
             {aciklama}
           </p>
 
-          <div style={{ '--gecikme': '280ms' } as CSSProperties} className="giris mt-9 flex flex-col gap-3 sm:flex-row">
+          <div style={{ '--gecikme': '280ms' } as CSSProperties} className="giris mt-8 flex items-center gap-2 sm:gap-2.5 [text-shadow:none]">
             <a
               href={tel}
               data-olay="telefon"
-              className="parilti group inline-flex min-h-16 items-center gap-3.5 rounded-full bg-white py-2 pl-2 pr-7 text-gece shadow-[0_18px_40px_-16px_rgb(220_38_38/0.55)] ring-2 ring-red-500/30 transition-transform [text-shadow:none] hover:-translate-y-0.5"
+              aria-label={`Ustayı hemen arayın: ${firma.telefon}`}
+              className="parilti inline-flex h-12 items-center gap-2.5 rounded-full bg-white pl-4 pr-5 text-[0.95rem] font-bold text-gece shadow-[0_10px_30px_-12px_rgb(0_0_0/0.55)] transition-transform hover:-translate-y-0.5"
             >
-              <span className="relative grid h-12 w-12 shrink-0 place-items-center rounded-full bg-red-600 text-white">
-                <span aria-hidden className="nabiz-kirmizi absolute inset-0 rounded-full bg-red-500" />
-                <Phone aria-hidden className="zil relative h-5 w-5" />
+              {/* Aciliyet: küçük, canlı kırmızı nokta */}
+              <span aria-hidden className="relative flex h-2.5 w-2.5">
+                <span className="nabiz-kirmizi absolute inset-0 rounded-full bg-red-500" />
+                <span className="relative h-2.5 w-2.5 rounded-full bg-red-500" />
               </span>
-              <span className="flex flex-col text-left leading-tight">
-                <span className="text-[0.78rem] font-bold uppercase tracking-[0.08em] text-red-600">Hemen ustayı arayın</span>
-                <span className="text-[1.15rem] font-extrabold tracking-tight">{firma.telefon}</span>
-              </span>
+              <span className="sm:hidden">Hemen arayın</span>
+              <span className="hidden sm:inline">Ustayı hemen arayın</span>
             </a>
             <a
               href={b.wa(waMesaj)}
               target="_blank"
               rel="noopener noreferrer"
               data-olay="whatsapp"
-              className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-white/15 bg-white/[0.06] px-7 text-[1.05rem] font-semibold text-white backdrop-blur transition-colors hover:bg-white/[0.12]"
+              className="inline-flex h-12 items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-5 text-[0.95rem] font-semibold text-white backdrop-blur transition-colors hover:bg-white/[0.14]"
             >
-              <WhatsappLogo className="h-5 w-5 text-whatsapp" />
-              WhatsApp’tan yazın
+              <WhatsappLogo className="h-[1.125rem] w-[1.125rem] text-whatsapp" />
+              WhatsApp
             </a>
           </div>
 
@@ -379,6 +382,7 @@ function Hero({
           </div>
         )}
       </div>
+      {serit && <HizmetSeridi b={b} />}
     </section>
   );
 }
@@ -419,6 +423,38 @@ function HeroArkaPlan({ foto }: { foto: HeroFoto }) {
       {/* Masaüstü: solda metin için koyu, sağda fotoğraf açık */}
       <div className="absolute inset-0 hidden bg-gradient-to-r from-gece via-gece/85 to-gece/5 md:block lg:via-gece/75" />
       <div className="absolute inset-0 hidden bg-gradient-to-t from-gece/60 via-transparent to-gece/30 md:block" />
+    </div>
+  );
+}
+
+/** Fotoğraflı hero'nun alt kenarında cam şerit: hizmetlere hızlı geçiş */
+function HizmetSeridi({ b }: { b: Baglam }) {
+  const { sektor, sayfa } = b;
+  const ilce = sayfa.tur === 'ilce' ? sayfa.ilce : undefined;
+  return (
+    <div className="kap pb-8 lg:pb-12">
+      <nav
+        aria-label="Hizmetler"
+        style={{ '--gecikme': '420ms' } as CSSProperties}
+        className="giris rounded-[22px] border border-white/12 bg-gece/50 p-2 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.7)] backdrop-blur-xl"
+      >
+        <p className="px-3 pb-1.5 pt-2 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-white/50">Ne için arıyorsunuz?</p>
+        <ul className="-mx-2 flex snap-x gap-1.5 overflow-x-auto px-2 pb-1 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0">
+          {sektor.hizmetler.map((h) => (
+            <li key={h.slug} className="shrink-0 snap-start">
+              <a
+                href={b.yol(sayfaYolu(ilce ? { tur: 'hizmetIlce', hizmet: h, ilce } : { tur: 'hizmet', hizmet: h }))}
+                className="group flex h-full items-center gap-2.5 rounded-2xl px-3 py-2.5 text-[0.88rem] font-semibold text-white/85 transition-colors hover:bg-white/[0.08] hover:text-white lg:flex-col lg:items-start lg:gap-3 lg:p-3.5"
+              >
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/[0.08] text-sky-300 ring-1 ring-white/10 transition-colors group-hover:bg-white/[0.14]">
+                  <Ikon ad={h.ikon} className="h-[1.1rem] w-[1.1rem]" />
+                </span>
+                <span className="whitespace-nowrap lg:whitespace-normal lg:leading-snug">{h.ad}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   );
 }
