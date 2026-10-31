@@ -30,8 +30,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     if (process.env.NEXT_PUBLIC_DEMO !== '1') return [];
     // Demo: /tesisat/... adresleri kişiselleştirilebilen dinamik demo sayfasına gider.
+    // public/ altındaki klasörler (hero fotoğrafları) bu kurala takılmasın diye hariç tutulur. Bakış ileriye doğru tüm yolu
+    // gördüğü için bölüm sonu "/" ya da yolun sonu olarak yazılır (yalnızca "$" yazılırsa /hero/... yine yakalanır).
     return {
-      beforeFiles: [{ source: '/:sektor((?!demo$|_next$|icon$)[a-z-]+)/:yol*', destination: '/demo/:sektor/:yol*' }],
+      beforeFiles: [{ source: '/:sektor((?!(?:demo|_next|icon|hero)(?:/|$))[a-z-]+)/:yol*', destination: '/demo/:sektor/:yol*' }],
       afterFiles: [],
       fallback: [],
     };
