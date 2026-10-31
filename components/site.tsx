@@ -12,6 +12,7 @@ import TermalGorsel from './termal-gorsel';
 import WhatsappLogo from './whatsapp-logo';
 import OtomatikKaydir from './otomatik-kaydir';
 import Sayac from './sayac';
+import HizliCubuk from './hizli-cubuk';
 import Takip, { CerezTercihleri } from './takip';
 import { YASAL_YOLLAR, type YasalMetin } from '@/lib/sayfa';
 
@@ -153,13 +154,14 @@ export function Kabuk({ b, children }: { b: Baglam; children: ReactNode }) {
       <Ust b={b} />
       <main id="icerik">{children}</main>
       <Alt b={b} />
+      <HizliCubuk tel={b.tel} wa={b.wa()} telefon={b.firma.telefon} />
       <a
         href={b.wa()}
         target="_blank"
         rel="noopener noreferrer"
         data-olay="whatsapp"
         aria-label="WhatsApp’tan yazın"
-        className="nabiz giris fixed bottom-5 right-5 z-50 grid h-13 w-13 place-items-center rounded-full bg-whatsapp text-white shadow-[0_10px_30px_-6px_rgb(18_140_75/0.6)] transition-transform hover:scale-105 sm:bottom-7 sm:right-7"
+        className="yuzen-wa nabiz giris fixed bottom-5 right-5 z-50 grid h-13 w-13 place-items-center rounded-full bg-whatsapp text-white shadow-[0_10px_30px_-6px_rgb(18_140_75/0.6)] transition-transform hover:scale-105 sm:bottom-7 sm:right-7"
       >
         <WhatsappLogo className="h-7 w-7" />
       </a>
@@ -319,7 +321,7 @@ function Hero({
   // Fotoğraflı hero'da hizmet kartı fotoğrafı kapatmasın diye alt kenarda şerit olur.
   const serit = Boolean(foto);
   return (
-    <section className="relative isolate overflow-hidden bg-gece text-white">
+    <section data-hero className="relative isolate overflow-hidden bg-gece text-white">
       {foto ? (
         <HeroArkaPlan foto={foto} />
       ) : (
