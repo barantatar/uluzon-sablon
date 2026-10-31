@@ -229,7 +229,5 @@
   }
 }
 
-/* Hızlı arama çubuğu açıkken yüzen WhatsApp düğmesi gizlenir; çubuk kapanınca giriş animasyonuyla geri gelir */
-[data-cubuk] .yuzen-wa { animation: none; opacity: 0; pointer-events: none; }
 /* Çubuk alt bilginin son satırlarını örtmesin */
 [data-cubuk] body { padding-bottom: 5.5rem; }

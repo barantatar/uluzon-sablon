@@ -155,16 +155,6 @@ export function Kabuk({ b, children }: { b: Baglam; children: ReactNode }) {
       <main id="icerik">{children}</main>
       <Alt b={b} />
       <HizliCubuk tel={b.tel} wa={b.wa()} telefon={b.firma.telefon} />
-      <a
-        href={b.wa()}
-        target="_blank"
-        rel="noopener noreferrer"
-        data-olay="whatsapp"
-        aria-label="WhatsApp’tan yazın"
-        className="yuzen-wa nabiz giris fixed bottom-5 right-5 z-50 grid h-13 w-13 place-items-center rounded-full bg-whatsapp text-white shadow-[0_10px_30px_-6px_rgb(18_140_75/0.6)] transition-transform hover:scale-105 sm:bottom-7 sm:right-7"
-      >
-        <WhatsappLogo className="h-7 w-7" />
-      </a>
     </div>
   );
 }

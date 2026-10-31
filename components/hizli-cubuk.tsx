@@ -5,25 +5,26 @@ import { Phone } from 'lucide-react';
 import WhatsappLogo from './whatsapp-logo';
 
 /**
- * Hero geçilince alttan açılan "Hemen Arayın / WhatsApp" çubuğu. Hero ekrandayken gizli kalır.
- * Hero'su olmayan sayfalarda (yasal metinler) biraz aşağı kaydırınca açılır.
- * Açıkken sağ alttaki yüzen WhatsApp düğmesi gizlenir, iki düğme üst üste binmez.
+ * Hero yarılanınca alttan açılan "Hemen Arayın / WhatsApp" çubuğu; hero'nun üst yarısı ekrandayken gizli kalır.
  */
 export default function HizliCubuk({ tel, wa, telefon }: { tel: string; wa: string; telefon: string }) {
   const [acik, setAcik] = useState(false);
 
   useEffect(() => {
     const hero = document.querySelector('[data-hero]');
-    if (!hero) {
-      const kontrol = () => setAcik(window.scrollY > 320);
-      kontrol();
-      window.addEventListener('scroll', kontrol, { passive: true });
-      return () => window.removeEventListener('scroll', kontrol);
-    }
-    // Hero'nun alt kenarı ekranın üstünden çıkınca (tamamen geçilince) açılır.
-    const gozlem = new IntersectionObserver(([g]) => setAcik(!g.isIntersecting && g.boundingClientRect.bottom <= 0));
-    gozlem.observe(hero);
-    return () => gozlem.disconnect();
+    // Hero'nun yarısı ekranın üstünden çıkınca açılır; hero'su olmayan sayfalarda (yasal metinler) biraz kaydırınca.
+    const kontrol = () => {
+      if (!hero) return setAcik(window.scrollY > 320);
+      const { top, height } = hero.getBoundingClientRect();
+      setAcik(top + height / 2 <= 0);
+    };
+    kontrol();
+    window.addEventListener('scroll', kontrol, { passive: true });
+    window.addEventListener('resize', kontrol, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', kontrol);
+      window.removeEventListener('resize', kontrol);
+    };
   }, []);
 
   useEffect(() => {
